@@ -4,11 +4,28 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, User, LogOut, Cookie, Menu, X } from "lucide-react";
+import { useSession, authClient } from "@/lib/auth-client"; // 👈 আপনার authClient এর সঠিক পাথ দিন
+import { useRouter } from "next/navigation";
 
 export default function RealFoodsNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  // Authenticated state (Toggle true/false to test layout)
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { data: session, isPending } = useSession(); // 👈 Better-Auth সেশন হুক
+  const router = useRouter();
+
+  // সেশন চেক করে ডাইনামিকালি ডিটেক্ট করবে ইউজার লগইন নাকি লগআউট
+  const isLoggedIn = !!session;
+
+  // লগআউট হ্যান্ডলার ফাংশন
+  const handleLogout = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/"); // লগআউট সফল হলে হোম পেজে রিডাইরেক্ট করবে
+          router.refresh();
+        },
+      },
+    });
+  };
 
   // 3 Routes for Logged Out users
   const publicRoutes = [
@@ -35,7 +52,6 @@ export default function RealFoodsNavbar() {
           
           {/* --- LEFT SIDE: MOBILE TOGGLE & LOGO --- */}
           <div className="flex items-center gap-3">
-            {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="sm:hidden p-2 rounded-lg text-[#7A2048] hover:bg-[#F3E8D3] transition-colors focus:outline-none"
@@ -44,7 +60,6 @@ export default function RealFoodsNavbar() {
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
 
-            {/* LOGO DESIGN */}
             <Link href="/" className="flex items-center gap-2 group cursor-pointer">
               <motion.div
                 whileHover={{ rotate: 15, scale: 1.1 }}
@@ -74,7 +89,6 @@ export default function RealFoodsNavbar() {
                 >
                   {route.label}
                 </Link>
-                {/* Custom sliding underline animation */}
                 <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-[#B4622F] transition-all duration-300 group-hover:w-full" />
               </div>
             ))}
@@ -82,7 +96,6 @@ export default function RealFoodsNavbar() {
 
           {/* --- RIGHT SIDE: ACTION BUTTONS --- */}
           <div className="flex items-center gap-4">
-            {/* Shopping Bag Button */}
             <motion.div whileTap={{ scale: 0.9 }}>
               <button className="p-2 rounded-full text-[#4A2E1F] hover:text-[#B4622F] hover:bg-[#F3E8D3] transition-colors">
                 <ShoppingBag size={20} />
@@ -90,7 +103,10 @@ export default function RealFoodsNavbar() {
             </motion.div>
 
             <AnimatePresence mode="wait">
-              {!isLoggedIn ? (
+              {isPending ? (
+                // সেশন লোড হওয়ার সময় একটি ছোট স্কেলেটন দেখাবে
+                <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
+              ) : !isLoggedIn ? (
                 <div className="flex items-center gap-2">
                   <Link href="/login" className="hidden md:inline-flex">
                     <button className="px-4 py-2 font-semibold text-[#4A2E1F] hover:text-[#B4622F] transition-colors rounded-lg">
@@ -107,14 +123,27 @@ export default function RealFoodsNavbar() {
                   </motion.div>
                 </div>
               ) : (
+                // ✅ লগইন থাকলে ডাইনামিক ইউজার ইমেজ, নেম এবং রিয়েল লগআউট বাটন দেখাবে
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2 border-l pl-3 border-[#E8D9BC]">
-                    <User size={18} className="text-[#B4622F]" />
-                    <span className="text-sm font-medium text-[#4A2E1F] hidden lg:inline">Chef Rakib</span>
+                    {session.user.image ? (
+                      <img
+                        src={session.user.image}
+                        alt={session.user.name}
+                        className="w-8 h-8 rounded-full object-cover border border-[#B4622F]"
+                      />
+                    ) : (
+                      <div className="p-1.5 bg-[#B4622F]/10 rounded-full text-[#B4622F]">
+                        <User size={18} />
+                      </div>
+                    )}
+                    <span className="text-sm font-semibold text-[#4A2E1F] hidden lg:inline max-w-[120px] truncate">
+                      {session.user.name}
+                    </span>
                   </div>
-                  <motion.div whileHover={{ scale: 1.05 }}>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <button
-                      onClick={() => setIsLoggedIn(false)}
+                      onClick={handleLogout}
                       className="p-2 bg-[#7A2048]/10 text-[#7A2048] hover:bg-[#7A2048]/20 rounded-xl transition-colors"
                       title="Logout"
                     >

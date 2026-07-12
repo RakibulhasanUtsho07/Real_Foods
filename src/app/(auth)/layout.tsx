@@ -77,7 +77,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
             className="inline-flex items-center gap-1.5 text-xs font-bold text-[#B0ACA2] hover:text-[#F0EDE6] transition-colors bg-[#1E1E1E] border border-white/5 px-3 py-1.5 rounded-full"
           >
             <BiArrowBack size={14} />
-            <span>Back to Kitchen</span>
+            <span>Back to Home</span>
           </Link>
         </div>
 

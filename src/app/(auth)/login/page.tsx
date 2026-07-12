@@ -1,23 +1,30 @@
 "use client";
 
 import React, { useState } from "react";
-import { Input, Button } from "@heroui/react";
 import { motion } from "framer-motion";
-import { BiEnvelope, BiLockOpen } from "react-icons/bi";
 import { FaGoogle } from "react-icons/fa";
+import { HiOutlineLockClosed, HiOutlineMail, HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
+import { authClient } from "@/lib/auth-client"; // 👈 আপনার প্রজেক্টের সঠিক পাথটি দিন
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string; global?: string }>({});
+  const router = useRouter();
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newErrors: { email?: string; password?: string } = {};
+    const newErrors: { email?: string; password?: string; global?: string } = {};
 
-    if (!email) newErrors.email = "Email is required.";
-    if (!password) newErrors.password = "Password is required.";
+    if (!email) {
+      newErrors.email = "Email field is required";
+    }
+    if (!password) {
+      newErrors.password = "Password field is required";
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -25,158 +32,169 @@ export default function LoginPage() {
     }
 
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 1500);
+
+    // Better-Auth এর মাধ্যমে ইমেইল এবং পাসওয়ার্ড দিয়ে লগইন প্রোসেস
+    await authClient.signIn.email({
+      email,
+      password,
+      fetchOptions: {
+        onResponse: () => {
+          setIsLoading(false);
+        },
+        onSuccess: () => {
+          router.push("/"); // ✅ সফলভাবে লগইন হলে হোম পেজে রিডাইরেক্ট
+          router.refresh();
+        },
+        onError: (ctx) => {
+          // কোনো ভুল হলে (যেমন: ভুল পাসওয়ার্ড বা ইউজার না থাকলে) এরর মেসেজ সেট হবে
+          setErrors({ global: ctx.error.message || "Invalid credentials, please try again." });
+        },
+      },
+    });
+  };
+
+  // গুগল ওয়ান-ট্যাপ বা সোশ্যাল লগইন হ্যান্ডলার
+  const handleGoogleLogin = async () => {
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/", // ✅ গুগল লগইন সফল হলেও হোম পেজে রিডাইরেক্ট করবে
+    });
   };
 
   return (
-    <div className="w-full max-w-md mx-auto space-y-6 p-2">
-      
-      {/* HEADER SECTION */}
-      <div className="space-y-1">
-        <h2 className="text-3xl font-black text-[#F0EDE6] tracking-tight">
-          Welcome Back
-        </h2>
-        <p className="text-sm text-[#B0ACA2] font-medium">
-          New to Real Foods?{" "}
-          <a href="/register" className="text-amber-500 font-bold hover:text-amber-400 transition-colors hover:underline">
-            Create an account
-          </a>
-        </p>
-      </div>
+    <div className="min-h-screen w-full flex items-center justify-center bg-[#FBF6EC] px-4 py-12">
+      <div className="w-full max-w-md bg-white rounded-2xl border border-[#E8D9BC] shadow-sm shadow-[#2B1B14]/5 p-8 space-y-6">
 
-      {/* CREDENTIALS FORM */}
-      <form onSubmit={handleLoginSubmit} className="space-y-5 w-full">
-        
-        {/* EMAIL INPUT (FULL WIDTH & HIGH CONTRAST) */}
-        <div className="w-full">
-        <Input
-  type="email"
-  label="Email Address"
-  placeholder="you@example.com"
-  labelPlacement="outside"
-  fullWidth
-  value={email}
-  onValueChange={(val) => {
-    setEmail(val);
-    setErrors((p) => ({ ...p, email: undefined }));
-  }}
-  isInvalid={!!errors.email}
-  errorMessage={errors.email}
-  variant="bordered"
-  classNames={{
-    base: "w-full",
-    mainWrapper: "w-full",
-    // 1. Added data-hover attribute overrides and forced background color
-    inputWrapper: [
-      "bg-[#161616]",
-      "data-[hover=true]:bg-[#1c1c1c]",
-      "group-data-[focus=true]:bg-[#161616]",
-      "h-12",
-      "rounded-xl",
-      "border-white/10",
-      "data-[hover=true]:border-white/20",
-      "group-data-[focus=true]:!border-amber-500",
-      "transition-all",
-      "w-full",
-    ].join(" "),
-    // 2. Clear color definitions for labels, inputs, and placeholders
-    label: "text-[#F0EDE6] text-xs font-bold mb-1.5 tracking-wide block",
-    input: [
-      "text-[#F0EDE6]",
-      "placeholder:text-stone-600",
-      "text-sm",
-      "bg-transparent", // Prevents inner white flashes
-    ].join(" "),
-    errorMessage: "text-rose-500 text-xs font-medium mt-1",
-  }}
-  startContent={<BiEnvelope className="text-stone-500 mr-1 shrink-0" size={18} />}
-/>
-        </div>
-
-        {/* PASSWORD INPUT (FULL WIDTH & HIGH CONTRAST) */}
-        <div className="w-full space-y-1.5">
-          <div className="flex justify-between items-center px-0.5">
-            <label className="text-[#F0EDE6] text-xs font-bold tracking-wide">Password</label>
-            <a href="/forgot-password" className="text-xs text-[#B0ACA2] hover:text-amber-500 transition-colors font-medium">
-              Forgot?
+        {/* HEADER SECTION */}
+        <div className="space-y-1">
+          <h2 className="text-3xl font-black text-[#2B1B14] tracking-tight">
+            Welcome back
+          </h2>
+          <p className="text-sm text-[#7A6A5C] font-medium">
+            New to Real Foods?{" "}
+            <a href="/register" className="text-[#B4622F] font-bold hover:text-[#93294F] transition-colors hover:underline">
+              Create an account
             </a>
-          </div>
-        <Input
-  type="password"
-  placeholder="••••••••"
-  labelPlacement="outside"
-  fullWidth
-  value={password}
-  onValueChange={(val) => { 
-    setPassword(val); 
-    setErrors(p => ({ ...p, password: undefined })); 
-  }}
-  isInvalid={!!errors.password}
-  errorMessage={errors.password}
-  variant="bordered"
-  classNames={{
-    base: "w-full", // Removed p-5 to prevent layout fragmentation
-    mainWrapper: "w-full",
-    // Uses HeroUI's explicit state tokens for reliable rendering over dark surfaces
-    inputWrapper: [
-      "bg-[#161616]",
-      "data-[hover=true]:bg-[#1c1c1c]",
-      "group-data-[focus=true]:bg-[#161616]",
-      "h-12",
-      "rounded-xl",
-      "border-white/10",
-      "data-[hover=true]:border-white/20",
-      "group-data-[focus=true]:!border-amber-500",
-      "transition-all",
-      "w-full",
-    ].join(" "),
-    input: [
-      "text-[#F0EDE6]",
-      "placeholder:text-stone-600",
-      "text-sm",
-      "bg-transparent" // Eliminates inner container background clashes
-    ].join(" "),
-    errorMessage: "text-rose-500 text-xs font-medium mt-1",
-  }}
-  startContent={<BiLockOpen className="text-stone-500 mr-1 shrink-0" size={18} />}
-/>
+          </p>
         </div>
 
-        {/* CLEAN AMBER ACTION BUTTON */}
-        <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} className="pt-2 w-full">
-          <Button
-            type="submit"
-            isLoading={isLoading}
-            className="w-full bg-amber-500 hover:bg-amber-600 text-[#111111] font-black text-sm h-12 rounded-xl transition-all shadow-md shadow-amber-500/5"
+        {/* CREDENTIALS FORM */}
+        <form onSubmit={handleLoginSubmit} className="space-y-5 w-full block" noValidate>
+          
+          {/* GLOBAL ERROR MESSAGE */}
+          {errors.global && (
+            <div className="p-3 bg-[#C0392B]/10 border border-[#C0392B]/20 rounded-xl text-center">
+              <p className="text-xs font-bold text-[#C0392B]">{errors.global}</p>
+            </div>
+          )}
+
+          {/* EMAIL INPUT */}
+          <div className="w-full block">
+            <label htmlFor="email" className="text-xs font-bold text-[#8A7A6C] uppercase tracking-wider mb-1.5 block pl-1">
+              Email address
+            </label>
+            <div className="relative w-full">
+              <HiOutlineMail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#B4622F] text-lg pointer-events-none" />
+              <input
+                id="email"
+                type="email"
+                autoComplete="email"
+                placeholder="name@example.com"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setErrors((p) => ({ ...p, email: undefined, global: undefined }));
+                }}
+                className={`w-full h-12 rounded-xl bg-[#FBF6EC] border text-sm font-medium text-[#2B1B14] placeholder:text-[#B0A28F] pl-10 pr-4 outline-none transition-all focus:bg-white focus:ring-2 ${
+                  errors.email
+                    ? "border-[#C0392B] focus:ring-[#C0392B]/20"
+                    : "border-[#E8D9BC] focus:border-[#B4622F] focus:ring-[#B4622F]/15"
+                }`}
+              />
+            </div>
+            {errors.email && (
+              <p className="text-xs font-semibold text-[#C0392B] mt-1.5 pl-1">{errors.email}</p>
+            )}
+          </div>
+
+          {/* PASSWORD INPUT */}
+          <div className="w-full block relative">
+            <div className="flex items-center justify-between mb-1.5 pl-1 pr-1">
+              <label htmlFor="password" className="text-xs font-bold text-[#8A7A6C] uppercase tracking-wider">
+                Password
+              </label>
+              <a href="/forgot-password" className="text-xs font-semibold text-[#B4622F] hover:text-[#93294F] transition-colors">
+                Forgot?
+              </a>
+            </div>
+            <div className="relative w-full">
+              <HiOutlineLockClosed className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#B4622F] text-lg pointer-events-none" />
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setErrors((p) => ({ ...p, password: undefined, global: undefined }));
+                }}
+                className={`w-full h-12 rounded-xl bg-[#FBF6EC] border text-sm font-medium text-[#2B1B14] placeholder:text-[#B0A28F] pl-10 pr-11 outline-none transition-all focus:bg-white focus:ring-2 ${
+                  errors.password
+                    ? "border-[#C0392B] focus:ring-[#C0392B]/20"
+                    : "border-[#E8D9BC] focus:border-[#B4622F] focus:ring-[#B4622F]/15"
+                }`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#8A7A6C] hover:text-[#B4622F] transition-colors"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <HiOutlineEyeOff size={18} /> : <HiOutlineEye size={18} />}
+              </button>
+            </div>
+            {errors.password && (
+              <p className="text-xs font-semibold text-[#C0392B] mt-1.5 pl-1">{errors.password}</p>
+            )}
+          </div>
+
+          {/* BRAND MATCHED BUTTON */}
+          <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} className="pt-2 w-full block">
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full h-12 rounded-xl bg-gradient-to-r from-[#7A2048] to-[#93294F] text-[#F3E8D3] font-black text-sm shadow-md shadow-[#7A2048]/20 transition-opacity disabled:opacity-80 flex items-center justify-center gap-2"
+            >
+              {isLoading && (
+                <span className="w-4 h-4 border-2 border-[#F3E8D3]/40 border-t-[#F3E8D3] rounded-full animate-spin" />
+              )}
+              {isLoading ? "Verifying..." : "Sign in"}
+            </button>
+          </motion.div>
+        </form>
+
+        {/* SEPARATOR */}
+        <div className="relative flex items-center justify-center py-2 w-full">
+          <div className="absolute inset-x-0 h-[1px] bg-[#E8D9BC]" />
+          <span className="relative z-10 bg-white px-4 text-[10px] uppercase tracking-widest text-[#8A7A6C] font-bold">
+            or continue with
+          </span>
+        </div>
+
+        {/* FULL-WIDTH SOCIAL GOOGLE BUTTON */}
+        <div className="w-full block">
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            className="w-full h-12 rounded-xl border border-[#E8D9BC] bg-white hover:bg-[#FBF6EC] font-black text-sm transition-all flex items-center justify-center gap-2 group"
           >
-            {isLoading ? "Verifying..." : "Sign In"}
-          </Button>
-        </motion.div>
-      </form>
+            <FaGoogle className="text-[#B4622F] group-hover:scale-110 transition-transform" size={16} />
+            <span className="text-[#2B1B14]">Sign in with Google</span>
+          </button>
+        </div>
 
-      {/* SEPARATOR */}
-      <div className="relative flex items-center justify-center py-2">
-        <div className="absolute inset-x-0 h-[1px] bg-white/5" />
-        <span className="relative z-10 bg-[#1e1e1e] px-4 text-[10px] uppercase tracking-widest text-stone-500 font-bold">
-          or continue with
-        </span>
       </div>
-
-      {/* FULL-WIDTH SOCIAL GOOGLE BUTTON */}
-      <div className="w-full">
-       <Button
-  variant="bordered"
-  fullWidth
-  onClick={() => console.log("Google Auth")}
-  className="w-full border border-white/10 bg-[#1A1A1A] hover:bg-white/5 font-black text-sm h-12 rounded-xl transition-all group"
-  startContent={<FaGoogle className="text-rose-500 mr-1 group-hover:scale-110 transition-transform" size={16} />}
->
-  <span className="bg-gradient-to-r from-[#4285F4] via-[#EA4335] to-[#FBBC05] bg-clip-text text-transparent">
-    Sign in with Google
-  </span>
-</Button>
-      </div>
-
     </div>
   );
 }
