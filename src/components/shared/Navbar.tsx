@@ -12,7 +12,7 @@ export default function RealFoodsNavbar() {
   const { data: session, isPending } = useSession(); // 👈 Better-Auth সেশন হুক
   const router = useRouter();
 
-  // সেশন চেক করে ডাইনামিকালি ডিটেক্ট করবে ইউজার লগইন নাকি লগআউট
+
   const isLoggedIn = !!session;
 
   // লগআউট হ্যান্ডলার ফাংশন
@@ -38,8 +38,10 @@ export default function RealFoodsNavbar() {
   const privateRoutes = [
     { label: "Home", href: "/" },
     { label: "Our Menu", href: "/explore" },
-    { label: "Add Bakery Item", href: "/items/add" },
-    { label: "Manage Items", href: "/items/manage" },
+    { label: "Add Bakery Item", href: "/dashboard/admin/add-products" },
+    // { label: "Manage Items", href: "/dashboard/admin/manage-products" },
+    { label: "Dashboard", href: "/dashboard" },
+    {label:"Foods", href: "/dashboard/admin/foods"},
     { label: "Order History", href: "/orders" },
   ];
 
