@@ -1,11 +1,22 @@
-import React from 'react'
 
-function UserHomePage() {
+import DashboardSidebar from '@/components/dashboard/DashboardSideber';
+import UserHomePage from '@/components/dashboard/UserDashboardHomePage';
+import React from 'react';
+
+export default function AdminPage() {
   return (
-    <div>
+    <div className="min-h-screen w-full flex bg-[#FBF6EC]/40 dark:bg-[#5e4a42] text-[#745143] dark:text-[#F3E8D3]">
       
-    </div>
-  )
-}
+      
+      <DashboardSidebar />
+      
+     
+      <main className="flex-1 w-full min-w-0 overflow-y-auto">
+        <div className="p-4 sm:p-6 lg:p-8 pt-16 lg:pt-6 w-full">
+          <UserHomePage />
+        </div>
+      </main>
 
-export default UserHomePage
+    </div>
+  );
+}

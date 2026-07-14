@@ -17,7 +17,7 @@ export default function RealFoodsNavbar() {
   const user = session?.user
   const newUser = {
     ...user,
-    position:"admin"
+    position:"user"
   }
   const userRole = newUser?.position;
   console.log(session?.user, "session user")
