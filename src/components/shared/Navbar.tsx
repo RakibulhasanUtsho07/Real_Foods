@@ -14,6 +14,14 @@ export default function RealFoodsNavbar() {
 
 
   const isLoggedIn = !!session;
+  const user = session?.user
+  const newUser = {
+    ...user,
+    position:"admin"
+  }
+  const userRole = newUser?.position;
+  console.log(session?.user, "session user")
+  
 
   // লগআউট হ্যান্ডলার ফাংশন
   const handleLogout = async () => {
@@ -39,8 +47,8 @@ export default function RealFoodsNavbar() {
     { label: "Home", href: "/" },
     { label: "Our Menu", href: "/explore" },
     { label: "Add Bakery Item", href: "/dashboard/admin/add-products" },
-    // { label: "Manage Items", href: "/dashboard/admin/manage-products" },
-    { label: "Dashboard", href: "/dashboard" },
+
+    { label: "Dashboard", href: `/dashboard/${userRole}` },
     {label:"Foods", href: "/dashboard/admin/foods"},
     { label: "Order History", href: "/orders" },
   ];

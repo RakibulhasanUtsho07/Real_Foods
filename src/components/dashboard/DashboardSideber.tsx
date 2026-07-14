@@ -37,7 +37,7 @@ export default function DashboardSidebar() {
   ];
   const newUser = {
     ...user,
-    role:"user",
+    role:"admin",
   }
   // রোলের ওপর ভিত্তি করে ডাইনামিক রেন্ডারিং
   const navItems = newUser?.role === "admin" ? adminNavItems : userNavLink;
