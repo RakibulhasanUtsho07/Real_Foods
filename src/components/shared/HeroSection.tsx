@@ -67,17 +67,17 @@ export default function HeroSection() {
 
   return (
     <section
-      className="relative w-full h-[65vh] min-h-[500px] flex items-center justify-center bg-[#111111] px-4 md:px-8 pt-20 select-none overflow-hidden"
+      className="relative p-10  w-full h-[65vh] min-h-[550px] flex items-center justify-center bg-[#ffffff] px-4 md:px-8 pt-20 select-none overflow-hidden"
       id="hero"
     >
       {/* The main inner card, color-matched to the dark scheme of image_1.png */}
-      <div className="w-full max-w-7xl bg-[#1E1E1E] rounded-[2.5rem] p-8 md:p-12 flex flex-col md:flex-row items-center gap-10 justify-between relative shadow-[0_15px_60px_-20px_rgba(0,0,0,0.6)] border border-white/5 h-full max-h-[520px] overflow-hidden">
+      <div className="w-full max-w-7xl bg-[#9c8e8e]  rounded-[2.5rem] p-8 md:p-12 flex flex-col md:flex-row items-center gap-10 justify-between relative shadow-[0_15px_60px_-20px_rgba(0,0,0,0.6)] border border-white/5 h-full max-h-[520px] overflow-hidden">
         
         {/* LEFT COLUMN: Controls & Morphing Text */}
-        <div className="flex-1 flex flex-col h-full z-10 max-w-xl text-[#F0EDE6] justify-between">
+        <div className="flex-1  flex flex-col h-full z-10 max-w-xl text-[#1f1e1e] justify-between">
           
           {/* Dynamic Category Tabs with unique animation */}
-          <div className="flex gap-2.5 mb-6 flex-wrap">
+          <div className="flex  gap-2.5 mb-6 flex-wrap">
             {BAKERY_SLIDES.map((slide, idx) => (
               <motion.button
                 key={slide.id}
@@ -128,7 +128,7 @@ export default function HeroSection() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-5 mt-6 border-t border-white/5 pt-6">
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button
-                className="bg-[#B01750] text-white font-bold h-12 px-7 rounded-full shadow-lg shadow-[#B01750]/20 group border border-white/5"
+                className="bg-[#33272c] text-white font-bold h-12 px-7 rounded-full shadow-lg shadow-[#B01750]/20 group border border-white/5"
                 endContent={<ShoppingCart size={18} className="group-hover:translate-x-0.5 transition-transform" />}
               >
                 Taste This Week's Bake

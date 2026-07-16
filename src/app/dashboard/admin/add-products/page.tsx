@@ -1,13 +1,22 @@
 "use client"
 import ProductForm from '@/components/admin/AddProductForm';
 import { addProducts } from '@/lib/api/action/action';
+import { getSessionData } from '@/lib/core/session';
+import { redirect } from 'next/navigation';
 
 
 import toast, { Toaster } from 'react-hot-toast';
 
 function AddProductsPage() {
  const handleAddProduct = async (productData: any) => {
+const user = await getSessionData()
+  if (!user) {
+    redirect("/login"); // ⚠️ point this to your real login route
+  }
 
+  if (user.role !== "admin") {
+    redirect("/");
+  }
   await toast.promise(
     (async () => {
       const result = await addProducts(productData);

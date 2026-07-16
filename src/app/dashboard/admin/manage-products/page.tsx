@@ -1,5 +1,7 @@
 import EditProductModal from "@/components/admin/EditProductForm";
 import { specificProduct } from "@/lib/api/action/action";
+import { getSessionData } from "@/lib/core/session";
+import { redirect } from "next/navigation";
 
 
 
@@ -8,6 +10,14 @@ interface Props {
 }
 
 async function ManageProductPage({ params }: Props) {
+  const user = await getSessionData()
+    if (!user) {
+      redirect("/login"); // ⚠️ point this to your real login route
+    }
+  
+    if (user.role !== "admin") {
+      redirect("/");
+    }
   const { _id } = await params;
 
   // Fetching data directly on the server

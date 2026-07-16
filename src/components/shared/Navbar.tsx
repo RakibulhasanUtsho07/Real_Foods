@@ -1,27 +1,54 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, User, LogOut, Cookie, Menu, X } from "lucide-react";
+import { ShoppingBag, ShoppingCart, User, LogOut, Cookie, Menu, X } from "lucide-react";
 import { useSession, authClient } from "@/lib/auth-client"; // 👈 আপনার authClient এর সঠিক পাথ দিন
 import { useRouter } from "next/navigation";
+import { getCartItems } from "@/lib/api/action/action";
 
 export default function RealFoodsNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { data: session, isPending } = useSession(); // 👈 Better-Auth সেশন হুক
   const router = useRouter();
-
+  const [cartCount, setCartCount] = useState(0);
 
   const isLoggedIn = !!session;
-  const user = session?.user
-  const newUser = {
-    ...user,
-    position:"user"
-  }
-  const userRole = newUser?.position;
-  console.log(session?.user, "session user")
-  
+  const user = session?.user;
+  const userRole = user?.role;
+  const userId = user?.id || (user as any)?._id;
+
+  // ফেচ কার্ট কাউন্ট — সেশন/ইউজার আইডি বদলালে রি-রান হবে
+  useEffect(() => {
+    if (!userId) {
+      setCartCount(0);
+      return;
+    }
+
+    let isMounted = true;
+
+    const fetchCartCount = async () => {
+      const result = await getCartItems(userId);
+      if (!isMounted) return;
+
+      if (result?.success && Array.isArray(result.data)) {
+        const total = result.data.reduce(
+          (sum: number, item: any) => sum + (item?.product?.quantity || 0),
+          0
+        );
+        setCartCount(total);
+      } else {
+        setCartCount(0);
+      }
+    };
+
+    fetchCartCount();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userId]);
 
   // লগআউট হ্যান্ডলার ফাংশন
   const handleLogout = async () => {
@@ -35,6 +62,13 @@ export default function RealFoodsNavbar() {
     });
   };
 
+  const handleCartClick = (e: React.MouseEvent) => {
+    if (!isLoggedIn) {
+      e.preventDefault();
+      router.push("/login");
+    }
+  };
+
   // 3 Routes for Logged Out users
   const publicRoutes = [
     { label: "Home", href: "/" },
@@ -45,11 +79,8 @@ export default function RealFoodsNavbar() {
   // 5 Routes for Logged In users
   const privateRoutes = [
     { label: "Home", href: "/" },
-    { label: "Our Menu", href: "/explore" },
-    { label: "Add Bakery Item", href: "/dashboard/admin/add-products" },
-
+    { label: "Our Menu", href: "/dashboard/user/menu" },
     { label: "Dashboard", href: `/dashboard/${userRole}` },
-    {label:"Foods", href: "/dashboard/admin/foods"},
     { label: "Order History", href: "/orders" },
   ];
 
@@ -59,7 +90,7 @@ export default function RealFoodsNavbar() {
     <nav className="fixed top-0 inset-x-0 z-50 backdrop-blur-md bg-[#FBF6EC]/80 dark:bg-[#2B1B14]/85 border-b border-[#E8D9BC] dark:border-[#4A2E1F]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          
+
           {/* --- LEFT SIDE: MOBILE TOGGLE & LOGO --- */}
           <div className="flex items-center gap-3">
             <button
@@ -106,15 +137,36 @@ export default function RealFoodsNavbar() {
 
           {/* --- RIGHT SIDE: ACTION BUTTONS --- */}
           <div className="flex items-center gap-4">
-            <motion.div whileTap={{ scale: 0.9 }}>
-              <button className="p-2 rounded-full text-[#4A2E1F] hover:text-[#B4622F] hover:bg-[#F3E8D3] transition-colors">
-                <ShoppingBag size={20} />
-              </button>
-            </motion.div>
+
+            {/* CART ICON — functional link, badge count, distinct bounce animation */}
+            <Link href="/dashboard/user/cart" onClick={handleCartClick}>
+              <motion.button
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.9 }}
+                className="relative p-2 rounded-full text-[#4A2E1F] hover:text-[#7A2048] hover:bg-[#F3E8D3] transition-colors"
+                aria-label="View cart"
+              >
+                <ShoppingCart size={20} />
+                <AnimatePresence>
+                  {cartCount > 0 && (
+                    <motion.span
+                      key={cartCount}
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                      className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-gradient-to-br from-[#7A2048] to-[#93294F] text-[#F3E8D3] text-[10px] font-black rounded-full shadow-md shadow-[#7A2048]/30"
+                    >
+                      {cartCount > 9 ? "9+" : cartCount}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </motion.button>
+            </Link>
 
             <AnimatePresence mode="wait">
               {isPending ? (
-                // সেশন লোড হওয়ার সময় একটি ছোট স্কেলেটন দেখাবে
+                // সেশন লোড হওয়ার সময় একটি ছোট স্কেলেটন দেখাবে
                 <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
               ) : !isLoggedIn ? (
                 <div className="flex items-center gap-2">
@@ -188,7 +240,25 @@ export default function RealFoodsNavbar() {
                   {route.label}
                 </Link>
               ))}
-              
+
+              {isLoggedIn && (
+                <Link
+                  href="/dashboard/user/cart"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center justify-between w-full text-[#2B1B14] text-lg font-semibold hover:text-[#B4622F] py-2 border-b border-[#F3E8D3]"
+                >
+                  <span className="flex items-center gap-2">
+                    <ShoppingCart size={18} />
+                    My Cart
+                  </span>
+                  {cartCount > 0 && (
+                    <span className="min-w-[20px] h-5 px-1.5 flex items-center justify-center bg-[#7A2048] text-[#F3E8D3] text-xs font-black rounded-full">
+                      {cartCount > 9 ? "9+" : cartCount}
+                    </span>
+                  )}
+                </Link>
+              )}
+
               {!isLoggedIn && (
                 <div className="flex flex-col gap-2 pt-4">
                   <Link href="/login" onClick={() => setIsMenuOpen(false)} className="w-full">

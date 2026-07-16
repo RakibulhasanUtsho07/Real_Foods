@@ -28,7 +28,7 @@ interface ProductDetailsClientProps {
 }
 
 export default function ProductDetailsClient({ product, user }: ProductDetailsClientProps) {
-
+console.log(user , "user user")
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
@@ -57,16 +57,17 @@ export default function ProductDetailsClient({ product, user }: ProductDetailsCl
       total: totalPrice,
     },
     user: {
-      userId: (session?.user as any)?.id || null,
-      name: session?.user?.name || null,
-      email: session?.user?.email || null,
+      userId: user?.id || null,
+      name: user?.name || null,
+      email: user?.email || null,
     },
+    
   });
 
-  const isLoggedIn = status === 'authenticated' && !!session?.user;
+  const isLoggedIn = status === 'authenticated' && user;
 
   const handleAddToCart = async () => {
-    if (!isLoggedIn) {
+    if (!user) {
       toast.error('Please log in to add items to your cart.');
       return;
     }
@@ -85,7 +86,7 @@ export default function ProductDetailsClient({ product, user }: ProductDetailsCl
   };
 
   const handleOrderNow = async () => {
-    if (!isLoggedIn) {
+    if (!user) {
       toast.error('Please log in to place an order.');
       return;
     }

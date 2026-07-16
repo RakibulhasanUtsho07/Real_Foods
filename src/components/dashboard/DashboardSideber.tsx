@@ -19,13 +19,14 @@ import { authClient } from "@/lib/auth-client";
 export default function DashboardSidebar() {
   const { data: session } = authClient.useSession();
   const user = session?.user;
+  console.log(user, "hello user master")
 
   // 🥐 সাধারণ ইউজার/কাস্টমার ড্যাশবোর্ড লিংকসমূহ
   const userNavLink = [
     { icon: LayoutDashboard, label: "Dashboard Home", link: "user" },
     { icon: UtensilsCrossed, label: "Explore Foods", link: "user/foods" },
-    { icon: ShoppingBag, label: "Order History", link: "user/ordered" },
-    { icon: User, label: "My Profile", link: "user/my-profile" },
+    { icon: ShoppingBag, label: "Order History", link: "user/my-orders" },
+    { icon: User, label: "My Profile", link: "user/profile" },
   ];
 
   // 👑 অ্যাডমিন ড্যাশবোর্ড লিংকসমূহ (বেকারি ম্যানেজমেন্ট)
@@ -35,12 +36,12 @@ export default function DashboardSidebar() {
     { icon: UtensilsCrossed, label: "Manage Foods", link: "admin/foods" },
     { icon: User, label: "Admin Profile", link: "admin/profile" },
   ];
-  const newUser = {
-    ...user,
-    role:"user",
-  }
+  // const newUser = {
+  //   ...user,
+  //   role:"user",
+  // }
   // রোলের ওপর ভিত্তি করে ডাইনামিক রেন্ডারিং
-  const navItems = newUser?.role === "admin" ? adminNavItems : userNavLink;
+  const navItems = user?.role === "admin" ? adminNavItems : userNavLink;
 
   // Real Foods ব্র্যান্ডের লোগো কম্পোনেন্ট
   const Logo = () => (

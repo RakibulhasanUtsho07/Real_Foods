@@ -2,8 +2,18 @@
 
 import FoodsTable from "@/components/admin/FoodsTable";
 import { allFoods } from "@/lib/api/data/data";
+import { getSessionData } from "@/lib/core/session";
+import { redirect } from "next/navigation";
 
 async function AllFoodsPage() {
+  const user = await getSessionData()
+    if (!user) {
+      redirect("/login"); // ⚠️ point this to your real login route
+    }
+  
+    if (user.role !== "admin") {
+      redirect("/");
+    }
   // সার্ভার অ্যাকশন থেকে ডেটা ফেচ করা
   const response = await allFoods();
   console.log(response, "response")

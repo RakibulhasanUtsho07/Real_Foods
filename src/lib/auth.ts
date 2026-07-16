@@ -15,7 +15,6 @@ const client: MongoClient = new MongoClient(uri);
 const db: Db = client.db("real-foods");
 
 export const auth = betterAuth({
-  // 👈 Better-Auth কে বলে দেওয়া হচ্ছে যে আপনি [...all] ব্যবহার করছেন
   advanced: {
     uri: "/api/auth",
   },
@@ -26,6 +25,35 @@ export const auth = betterAuth({
 
   emailAndPassword: {
     enabled: true,
+  },
+
+  // ১. ইউজার স্কিমাতে রোল ফিল্ড যোগ করা (সঠিক key: additionalFields)
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: false,
+        defaultValue: "user",
+        input: false, // ফ্রন্টএন্ড থেকে ইউজার নিজে role পাঠিয়ে override করতে পারবে না
+      },
+    },
+  },
+
+  // ২. এখন এটা optional/redundant হয়ে গেছে যেহেতু defaultValue সেট করা আছে,
+  //    তবে extra safety হিসেবে রাখা যায়
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          return {
+            data: {
+              ...user,
+              role: user.role || "user",
+            },
+          };
+        },
+      },
+    },
   },
 
   database: mongodbAdapter(db, {
