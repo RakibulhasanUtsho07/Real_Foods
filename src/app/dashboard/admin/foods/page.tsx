@@ -2,7 +2,7 @@
 
 import FoodsTable from "@/components/admin/FoodsTable";
 import { allFoods } from "@/lib/api/data/data";
-import { getSessionData } from "@/lib/core/session";
+import { getSessionData } from '@/lib/core/session/session-client';
 import { redirect } from "next/navigation";
 
 async function AllFoodsPage() {

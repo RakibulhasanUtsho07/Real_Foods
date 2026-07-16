@@ -1,6 +1,6 @@
 import FoodCatalogClient from "@/components/dashboard/UsersAllFoodsPage";
 import { allFoods } from "@/lib/api/data/data";
-import { getSessionData } from "@/lib/core/session";
+import { getSessionData } from '@/lib/core/session/session-client';
 import { redirect } from "next/navigation";
 import { Sparkles, Package, Layers } from "lucide-react";
 

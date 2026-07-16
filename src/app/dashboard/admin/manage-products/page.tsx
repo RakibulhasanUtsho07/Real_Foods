@@ -1,6 +1,6 @@
 import EditProductModal from "@/components/admin/EditProductForm";
 import { specificProduct } from "@/lib/api/action/action";
-import { getSessionData } from "@/lib/core/session";
+import { getSessionData } from '@/lib/core/session/session-client';
 import { redirect } from "next/navigation";
 
 

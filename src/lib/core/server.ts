@@ -1,4 +1,6 @@
-import { getUserToken } from "./session"
+import { getUserToken } from "./session/session-server"
+
+
 
 
 export const authHeader = async()=>{

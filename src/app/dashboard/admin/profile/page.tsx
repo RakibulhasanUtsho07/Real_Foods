@@ -1,6 +1,6 @@
 import AdminStatGrid from '@/components/admin/AdminStatCard';
 import SystemControlCard from '@/components/admin/SystemControlCard';
-import { getSessionData } from '@/lib/core/session';
+import { getSessionData } from '@/lib/core/session/session-client';
 import { redirect } from 'next/navigation';
 import React from 'react';
 

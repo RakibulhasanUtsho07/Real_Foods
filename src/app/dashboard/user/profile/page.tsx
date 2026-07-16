@@ -1,6 +1,6 @@
 import UserInfoCard from "@/components/user/ProfileCard";
 import UserActivityLog from "@/components/user/UserActivityLog";
-import { getSessionData } from "@/lib/core/session";
+import { getSessionData } from '@/lib/core/session/session-client';
 import { redirect } from "next/navigation";
 
 

@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 
 // আপনার প্রোডাকশন টাইপ বাইন্ডিং
 import ProductDetailsClient from '@/components/dashboard/ProductDetailsSection';
-import { getSessionData } from '@/lib/core/session';
+import { getSessionData } from '@/lib/core/session/session-client';
 import { getProductById } from '@/lib/api/action/action';
 
 // Next.js 15+ এর জন্য সঠিক অ্যাসিনক্রোনাস params টাইপ ডিক্লারেশন

@@ -1,6 +1,5 @@
 import { headers } from "next/headers";
-import { authClient } from "../auth-client";
-import { auth } from "../auth";
+import { authClient } from "../../auth-client";
 
 export const getSessionData = async () => {
   try {
@@ -15,10 +14,4 @@ export const getSessionData = async () => {
     console.error("Error fetching session:", error);
     return null;
   }
-};
-export const getUserToken = async () => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-  return session?.session?.token;
 };
