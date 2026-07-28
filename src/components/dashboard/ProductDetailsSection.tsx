@@ -1,16 +1,13 @@
 "use client";
 
 import React, { useState } from 'react';
-
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-// ⚠️ swap if using a different auth provider
 import {
   ArrowLeft,
   Minus,
   Plus,
-  ShoppingBag,
   ShoppingCart,
   Zap,
   Calendar,
@@ -19,16 +16,25 @@ import {
   Loader2,
 } from 'lucide-react';
 import { BakeryProduct } from '@/src/app/dashboard/user/foods/page';
-// ⚠️ adjust to your real export names
 import Image from 'next/image';
 import { addToCartAction, placeOrder } from '@/lib/api/action/action';
 
+// ১. user এর প্রপস টাইপ ইন্টারফেসে যুক্ত করা হলো
 interface ProductDetailsClientProps {
   product: BakeryProduct;
+  user: {
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    email: string;
+    emailVerified: boolean;
+    name: string;
+    image?: string | null;
+  } | null;
 }
 
 export default function ProductDetailsClient({ product, user }: ProductDetailsClientProps) {
-console.log(user , "user user")
+  console.log(user, "user user")
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
@@ -46,7 +52,6 @@ console.log(user , "user user")
     return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
   };
 
-  // Shared payload: product info + user info, sent to backend for both cart & order
   const buildPayload = () => ({
     product: {
       productId: (product as any)._id || (product as any).id,
@@ -61,10 +66,10 @@ console.log(user , "user user")
       name: user?.name || null,
       email: user?.email || null,
     },
-    
   });
 
-  const isLoggedIn = status === 'authenticated' && user;
+  // ২. missing 'status' ভেরিয়েবলের ঝামেলা এড়াতে সরাসরি user চেক করা হলো
+  const isLoggedIn = !!user;
 
   const handleAddToCart = async () => {
     if (!user) {

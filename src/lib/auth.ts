@@ -1,64 +1,55 @@
-import dns from "node:dns";
-dns.setServers(["8.8.8.8", "8.8.4.4"]);
-
 import { betterAuth } from "better-auth";
-import { MongoClient, Db } from "mongodb";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
+import { MongoClient } from "mongodb";
 
-const uri: string | undefined = process.env.MONGO_DB_URI;
-
+const uri = process.env.MONGO_URI;
 if (!uri) {
-  throw new Error("Please define the MONGO_DB_URI environment variable inside .env.local");
+  throw new Error("Please add MONGO_URI to environment variables");
 }
 
-const client: MongoClient = new MongoClient(uri);
-const db: Db = client.db("real-foods");
+const client = new MongoClient(uri);
+const db = client.db(process.env.DB_NAME || "real-foods");
+
+// ডোমেইন ডাইনামিকলি ডিটেক্ট করার জন্য
+const getBaseUrl = () => {
+  if (process.env.BETTER_AUTH_URL) {
+    return process.env.BETTER_AUTH_URL;
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return "http://localhost:3000";
+};
 
 export const auth = betterAuth({
-  advanced: {
-    uri: "/api/auth",
-  },
+  // ডায়নামিকলি ওয়েবসাইট URL সেট হবে (Local/Vercel/Custom Domain)
+  baseURL: getBaseUrl(),
+  secret: process.env.BETTER_AUTH_SECRET,
 
+  // প্রোডাকশন এবং লোকাল উভয় এনভায়রনমেন্টের জন্য Trusted Origins
   trustedOrigins: [
     "http://localhost:3000",
-  ],
+    "http://127.0.0.1:3000",
+    "https://real-foods.vercel.app", // আপনার Vercel বা লাইভ ডোমেইন
+    process.env.BETTER_AUTH_URL || "",
+  ].filter(Boolean),
+
+  database: mongodbAdapter(db, {
+    client,
+  }),
 
   emailAndPassword: {
     enabled: true,
   },
 
-  // ১. ইউজার স্কিমাতে রোল ফিল্ড যোগ করা (সঠিক key: additionalFields)
   user: {
     additionalFields: {
       role: {
         type: "string",
         required: false,
         defaultValue: "user",
-        input: false, // ফ্রন্টএন্ড থেকে ইউজার নিজে role পাঠিয়ে override করতে পারবে না
+        input: false,
       },
     },
   },
-
-  // ২. এখন এটা optional/redundant হয়ে গেছে যেহেতু defaultValue সেট করা আছে,
-  //    তবে extra safety হিসেবে রাখা যায়
-  databaseHooks: {
-    user: {
-      create: {
-        before: async (user) => {
-          return {
-            data: {
-              ...user,
-              role: user.role || "user",
-            },
-          };
-        },
-      },
-    },
-  },
-
-  database: mongodbAdapter(db, {
-    client,
-  }),
 });
-
-export type Auth = typeof auth;

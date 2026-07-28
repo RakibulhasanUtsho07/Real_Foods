@@ -47,6 +47,7 @@ export const addProducts = async (productData: any) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+         ...(await getValidHeader()),
       },
       body: JSON.stringify(productData),
     });

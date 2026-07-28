@@ -1,17 +1,18 @@
 import { headers } from "next/headers";
-import { authClient } from "../../auth-client";
+import { authClient } from "../../auth-client"; // অথবা আপনার auth (server instance)
 
-export const getSessionData = async () => {
+export const getSessionServerData = async () => {
   try {
+    const reqHeaders = await headers();
     const { data: session } = await authClient.getSession({
       fetchOptions: {
-        headers: await headers(),
+        headers: reqHeaders,
       },
     });
 
     return session?.user ?? null;
   } catch (error) {
-    console.error("Error fetching session:", error);
+    console.error("Error fetching server session:", error);
     return null;
   }
 };

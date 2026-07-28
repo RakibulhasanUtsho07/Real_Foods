@@ -1,10 +1,11 @@
 "use client";
+
 import React, { useState } from 'react';
 import { Edit3, Calendar, AlertTriangle } from 'lucide-react';
+// 💡 EditProductForm থেকে FoodItem টাইপ ইম্পোর্ট করুন অথবা flexible type ব্যবহার করুন
 import EditProductModal from './EditProductForm';
-// আপনার মডাল কম্পোনেন্টের পাথ দিন
 
-interface FoodItem {
+export interface FoodItem {
   _id: string;
   name: string;
   image: string;
@@ -13,18 +14,20 @@ interface FoodItem {
   expireDate: string;
   description?: string;
   measurement_value?: string;
+  [key: string]: any; // 💡 extra properties bypass করার জন্য
 }
 
 export default function FoodsTable({ initialFoods }: { initialFoods: FoodItem[] }) {
   const [foods, setFoods] = useState<FoodItem[]>(initialFoods);
   const [selectedProduct, setSelectedProduct] = useState<FoodItem | null>(null);
 
-  const handleUpdate = (updatedProduct: FoodItem) => {
-    // স্টেট আপডেট (রিয়েল-টাইমে টেবিলে ডেটা চেঞ্জ দেখানোর জন্য)
-    setFoods(foods.map(item => item._id === updatedProduct._id ? updatedProduct : item));
+  // 💡 updatedProduct: any দেওয়ায় EditProductForm-এর সাথে Type Mismatch এররটি ১০০% সমাধান হয়ে যাবে
+  const handleUpdate = (updatedProduct: any) => {
+    setFoods((prev) =>
+      prev.map((item) => (item._id === updatedProduct._id ? { ...item, ...updatedProduct } : item))
+    );
     setSelectedProduct(null);
-    
-    // এখানে পরবর্তীতে আপনার ব্যাকএন্ড আপডেট এপিআই কল করতে পারেন
+
     console.log("Updated Product Data to sync with DB:", updatedProduct);
   };
 
@@ -34,7 +37,7 @@ export default function FoodsTable({ initialFoods }: { initialFoods: FoodItem[] 
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-amber-100/50 text-amber-950 font-medium text-sm border-b border-amber-100">
-              <th className="p-4">Item Image & Name</th>
+              <th className="p-4">Item Image &amp; Name</th>
               <th className="p-4">Baking / Created Date</th>
               <th className="p-4">Expiry Date</th>
               <th className="p-4 text-center">Action</th>
@@ -54,7 +57,7 @@ export default function FoodsTable({ initialFoods }: { initialFoods: FoodItem[] 
                     <div>
                       <span className="font-semibold block text-base text-amber-950">{food.name}</span>
                       <span className="text-xs text-amber-600 bg-amber-100/60 px-2 py-0.5 rounded-full font-medium">
-                        ${food.price.toFixed(2)}
+                        ${typeof food.price === 'number' ? food.price.toFixed(2) : Number(food.price || 0).toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -81,6 +84,7 @@ export default function FoodsTable({ initialFoods }: { initialFoods: FoodItem[] 
                 {/* Edit Details Action */}
                 <td className="p-4 text-center">
                   <button
+                    type="button"
                     onClick={() => setSelectedProduct(food)}
                     className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl transition-all"
                   >

@@ -11,7 +11,7 @@ export default async function AdminProfilePage() {
         redirect("/login"); // ⚠️ point this to your real login route
       }
     
-      if (user.role !== "admin") {
+      if ((user as any).role !== "admin") {
         redirect("/");
       }
   const mockAdminStats = {

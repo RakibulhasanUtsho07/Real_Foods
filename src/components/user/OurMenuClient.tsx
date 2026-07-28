@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, Star, Search, SlidersHorizontal } from 'lucide-react';
-import { BakeryItem } from '@/src/app/menu/page';
+import { ShoppingCart, Star, Search, Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { getSessionData } from '@/lib/core/session/session-client';
+import type { BakeryItem } from '@/app/our-menu/page';
 
 interface OurMenuClientProps {
   items: BakeryItem[];
@@ -12,12 +14,41 @@ interface OurMenuClientProps {
 type MenuCategory = 'All' | 'Oven Fresh' | 'Signature Sweet' | 'Artisan Bread' | 'Celebration Cakes';
 
 export default function OurMenuClient({ items }: OurMenuClientProps) {
+  const router = useRouter();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<MenuCategory>('All');
   const [searchQuery, setSearchQuery] = useState('');
 
+  // 🔐 CLIENT-SIDE AUTH CHECK
+  useEffect(() => {
+    const verifyUser = async () => {
+      try {
+        const user = await getSessionData();
+        console.log("Menu client session check:", user);
+
+        if (!user) {
+          router.replace("/login");
+          return;
+        }
+
+        if ((user as any)?.role !== "user") {
+          router.replace("/");
+          return;
+        }
+
+        setIsCheckingAuth(false);
+      } catch (error) {
+        console.error("Auth check error:", error);
+        router.replace("/login");
+      }
+    };
+
+    verifyUser();
+  }, [router]);
+
   const categories: MenuCategory[] = ['All', 'Oven Fresh', 'Signature Sweet', 'Artisan Bread', 'Celebration Cakes'];
 
-  // 🔍 সার্চ এবং ফিল্টারিং লজিক পাইপলাইন
+  // 🔍 SEARCH & FILTER PIPELINE
   const filteredItems = useMemo(() => {
     return items.filter(item => {
       const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
@@ -27,13 +58,25 @@ export default function OurMenuClient({ items }: OurMenuClientProps) {
     });
   }, [selectedCategory, searchQuery, items]);
 
+  // ⏳ AUTH CHECKING SPINNER
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-[50vh] flex flex-col items-center justify-center gap-3">
+        <Loader2 className="w-8 h-8 animate-spin text-[#7A2048]" />
+        <p className="text-xs font-bold text-[#7A6A5C] uppercase tracking-wider">
+          Verifying Access...
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       
-      {/* 🛠️ CONTROL PANEL: SEARCH & TABS MATRIX */}
+      {/* CONTROL PANEL: SEARCH & TABS */}
       <div className="flex flex-col md:flex-row gap-4 items-center justify-between border-b border-[#E8D9BC] pb-5">
         
-        {/* Unique Luxury Search Box */}
+        {/* Search Input */}
         <div className="relative w-full md:w-80 group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8A7A6C] group-focus-within:text-[#7A2048] size-4 transition-colors" />
           <input
@@ -45,11 +88,12 @@ export default function OurMenuClient({ items }: OurMenuClientProps) {
           />
         </div>
 
-        {/* Categories Tab Pill Rows */}
+        {/* Category Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto no-scrollbar pb-2 md:pb-0">
           {categories.map((cat) => (
             <button
               key={cat}
+              type="button"
               onClick={() => setSelectedCategory(cat)}
               className={`relative px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl border outline-none shrink-0 transition-all duration-200 ${
                 selectedCategory === cat
@@ -63,7 +107,7 @@ export default function OurMenuClient({ items }: OurMenuClientProps) {
         </div>
       </div>
 
-      {/* 🎴 DYNAMIC PRODUCTS GRID WITH ANIMATION PRESENCE */}
+      {/* PRODUCTS GRID */}
       <motion.div 
         layout
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center"
@@ -87,11 +131,11 @@ export default function OurMenuClient({ items }: OurMenuClientProps) {
                 <img
                   src={item.image}
                   alt={item.name}
-                  className="w-full h-full object-cover group-hover:scale-106 transition-transform duration-500 ease-out"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                 />
               </div>
 
-              {/* Text Context Matrix */}
+              {/* Details & Action */}
               <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -110,8 +154,8 @@ export default function OurMenuClient({ items }: OurMenuClientProps) {
                   </p>
                 </div>
 
-                {/* Add to Cart Premium Action Block */}
                 <button
+                  type="button"
                   onClick={() => alert(`Added ${item.name} to batch!`)}
                   className="w-full py-3 bg-[#FBF6EC] hover:bg-[#7A2048] text-[#7A2048] hover:text-white text-xs font-black uppercase tracking-wider rounded-xl border border-[#E8D9BC] hover:border-[#7A2048] flex items-center justify-center gap-2 transition-all duration-200 shadow-sm"
                 >
@@ -124,7 +168,7 @@ export default function OurMenuClient({ items }: OurMenuClientProps) {
         </AnimatePresence>
       </motion.div>
 
-      {/* 💨 NO DATA FOUND STATE */}
+      {/* NO DATA FOUND */}
       {filteredItems.length === 0 && (
         <motion.div
           initial={{ opacity: 0 }}

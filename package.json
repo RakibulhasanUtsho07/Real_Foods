@@ -13,6 +13,7 @@
     "@heroui/react": "^3.2.2",
     "@heroui/styles": "^3.2.2",
     "better-auth": "^1.6.23",
+    "dotenv": "^17.4.2",
     "framer-motion": "^12.42.2",
     "lucide-react": "^1.24.0",
     "mongodb": "^7.5.0",

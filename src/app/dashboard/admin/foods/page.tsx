@@ -12,7 +12,7 @@ async function AllFoodsPage() {
       redirect("/login"); // ⚠️ point this to your real login route
     }
   
-    if (user.role !== "admin") {
+    if ((user as any).role !== "admin") {
       redirect("/");
     }
   // সার্ভার অ্যাকশন থেকে ডেটা ফেচ করা

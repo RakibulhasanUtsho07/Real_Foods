@@ -10,7 +10,7 @@ export default async function UserProfilePage() {
         redirect("/login"); // ⚠️ point this to your real login route
       }
     
-      if (user?.role !== "user") {
+      if ((user as any).role !== "user") {
         redirect("/");
       }
       // 

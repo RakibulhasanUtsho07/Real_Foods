@@ -1,8 +1,5 @@
 import OurMenuClient from '@/components/user/OurMenuClient';
-import { getSessionData } from '@/lib/core/session/session-client';
-import { redirect } from 'next/navigation';
 import React from 'react';
-
 
 export interface BakeryItem {
   _id: string;
@@ -15,17 +12,6 @@ export interface BakeryItem {
 }
 
 export default async function OurMenuPage() {
-  // 💡 পরবর্তীতে আপনার backend/action.js থেকে প্রোডাক্ট ডেটা সরাসরি এখানে ফেচ করতে পারেন:
-  // const products = await getAllProductsAction();
-const user = await getSessionData()
-  if (!user) {
-    redirect("/login"); // ⚠️ point this to your real login route
-  }
-
-  if (user.role !== "user") {
-    redirect("/");
-  }
-  // আপনার রিয়েল ডাটাবেস স্কিমার সাথে সামঞ্জস্যপূর্ণ মক ডেটা:
   const mockMenuData: BakeryItem[] = [
     {
       _id: "prod-01",
