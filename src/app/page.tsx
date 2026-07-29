@@ -13,7 +13,7 @@ export default function Home() {
       <RealFoodsNavbar/>
       <HeroSection/>
 
-      <h2>Hello</h2>
+      
       <FeaturedSection/>
       <AboutSection/>
       <SpecialOffersSection/>

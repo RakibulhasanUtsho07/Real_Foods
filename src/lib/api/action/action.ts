@@ -1,17 +1,24 @@
 "use server"
 
-import { BakeryProduct } from "@/app/dashboard/user/foods/page";
+
+import { BakeryProduct } from "@/app/dashboard/user/foods/BakryProduct";
 import { authHeader } from "@/lib/core/server";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-const getValidHeader = async () => {
-  const headers = await authHeader();
 
-  if (!headers.authorization || headers.authorization.includes("undefined")) {
+const getValidHeader = async (): Promise<Record<string, string>> => {
+
+  const headers = (await authHeader()) as Record<string, string>;
+
+  // Safe Navigation operator (?.) অথবা bracket notation ব্যবহার করুন
+  const authVal = headers.authorization || headers?.Authorization || "";
+
+  if (!authVal || authVal.includes("undefined")) {
     console.warn(
       "⚠️ Warning: Authorization token is undefined in Server Action!",
     );
   }
+
   return headers;
 };
 // ---------- Shared types ----------
