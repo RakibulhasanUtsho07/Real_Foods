@@ -68,18 +68,20 @@ export default function Footer() {
           </div>
           
           <div className="w-full lg:w-auto flex flex-col sm:flex-row items-center gap-3 min-w-[320px] sm:min-w-[450px]">
-            <Input
-              type="email"
-              placeholder="Enter your email address"
-              variant="bordered"
-              radius="full"
-              className="w-full text-white"
-              classNames={{
-                inputWrapper: "border-white/10 hover:border-white/20 focus-within:!border-amber-500/50 bg-[#111111] h-12 text-sm",
-                input: "text-white placeholder:#B0ACA2"
-              }}
-              startContent={<BiEnvelope className="text-[#B0ACA2]" size={18} />}
-            />
+           <Input
+  type="email"
+  placeholder="Enter your email address"
+  startContent={<BiEnvelope className="text-[#B0ACA2]" size={18} />}
+  {...({
+    variant: "bordered",
+    radius: "full",
+    className: "w-full text-white",
+    classNames: {
+      inputWrapper: "border border-white/10 hover:border-white/20 focus-within:!border-amber-500/50 bg-[#111111] h-12 text-sm rounded-full",
+      input: "text-white placeholder:text-[#B0ACA2]"
+    }
+  } as any)}
+/>
             <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="w-full sm:w-auto shrink-0">
               <Button className="w-full sm:w-auto bg-[#B01750] text-white font-bold h-12 px-8 rounded-full shadow-lg shadow-[#B01750]/10 border border-white/5">
                 Subscribe

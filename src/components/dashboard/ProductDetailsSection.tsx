@@ -15,9 +15,10 @@ import {
   CheckCircle2,
   Loader2,
 } from 'lucide-react';
-import { BakeryProduct } from '@/src/app/dashboard/user/foods/page';
+
 import Image from 'next/image';
 import { addToCartAction, placeOrder } from '@/lib/api/action/action';
+import { BakeryProduct } from '@/app/dashboard/user/foods/BakryProduct';
 
 // ১. user এর প্রপস টাইপ ইন্টারফেসে যুক্ত করা হলো
 interface ProductDetailsClientProps {

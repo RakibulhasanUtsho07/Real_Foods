@@ -1,45 +1,22 @@
 import MyOrdersClient from '@/components/dashboard/MyOrderClient';
+import { OrderedProduct } from '@/components/user/ordered/OrderedProduct';
 import { getSessionServerData } from '@/lib/core/session/session-server';
-
-
 import { redirect } from 'next/navigation';
-import React from 'react';
 
 
-// Layout Schema Matching the Express Backend Payload Array Response
-export interface OrderedProduct {
-  _id: string;
-  product: {
-    productId: string;
-    name: string;
-    image?: string;
-    price: number;
-    quantity: number;
-    total: number;
-  };
-  user: {
-    userId: string | null;
-    name: string | null;
-    email: string | null;
-  };
-  status: 'Pending' | 'Baking' | 'Out for Delivery' | 'Delivered' | 'Cancelled';
-  createdAt: string;
-}
 
 export default async function MyOrdersPage() {
-  const user = await getSessionServerData()
-    if (!user) {
-      redirect("/login"); // ⚠️ point this to your real login route
-    }
-  
+  const user = await getSessionServerData();
+
+  if (!user) {
+    redirect("/login");
+  }
+
   if ((user as any).role !== "user") {
-      redirect("/");
-    }
-    // 
-  // 💡 Call your custom action.js fetch method here to pull active client database targets
-  // Example: const orders = await getCustomerOrdersAction();
-  
-  // Mock fallback array matching exactly your real backend schema for seamless compilation:
+    redirect("/");
+  }
+
+  // Mock fallback array matching exactly your real backend schema:
   const mockOrders: OrderedProduct[] = [
     {
       _id: "ORD-99812",

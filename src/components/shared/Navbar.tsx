@@ -16,8 +16,10 @@ export default function RealFoodsNavbar() {
 
   const isLoggedIn = !!session;
   const user = session?.user;
-  const userRole = user?.role;
-  const userId = user?.id || (user as any)?._id;
+
+  // ✅ Type Safe user role & userId extraction
+  const userRole = (user as { role?: string } | undefined)?.role || "user";
+  const userId = user?.id || (user as { _id?: string } | undefined)?._id;
 
   // ফেচ কার্ট কাউন্ট — সেশন/ইউজার আইডি বদলালে রি-রান হবে
   useEffect(() => {
@@ -138,7 +140,7 @@ export default function RealFoodsNavbar() {
           {/* --- RIGHT SIDE: ACTION BUTTONS --- */}
           <div className="flex items-center gap-4">
 
-            {/* CART ICON — functional link, badge count, distinct bounce animation */}
+            {/* CART ICON — functional link, badge count */}
             <Link href="/dashboard/user/cart" onClick={handleCartClick}>
               <motion.button
                 whileHover={{ y: -2 }}
@@ -166,7 +168,6 @@ export default function RealFoodsNavbar() {
 
             <AnimatePresence mode="wait">
               {isPending ? (
-                // সেশন লোড হওয়ার সময় একটি ছোট স্কেলেটন দেখাবে
                 <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
               ) : !isLoggedIn ? (
                 <div className="flex items-center gap-2">
@@ -185,7 +186,6 @@ export default function RealFoodsNavbar() {
                   </motion.div>
                 </div>
               ) : (
-                // ✅ লগইন থাকলে ডাইনামিক ইউজার ইমেজ, নেম এবং রিয়েল লগআউট বাটন দেখাবে
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2 border-l pl-3 border-[#E8D9BC]">
                     {session.user.image ? (

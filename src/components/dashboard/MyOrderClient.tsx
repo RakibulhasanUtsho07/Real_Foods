@@ -2,8 +2,9 @@
 
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, Clock, CheckCircle2, Truck, XCircle, Calendar, DollarSign } from 'lucide-react';
-import { OrderedProduct } from '@/src/app/dashboard/user/ordered/page';
+import { ShoppingBag, Clock, CheckCircle2, Truck, XCircle, Calendar } from 'lucide-react';
+import { OrderedProduct } from '../user/ordered/OrderedProduct';
+
 
 interface MyOrdersClientProps {
   orders: OrderedProduct[];
@@ -11,7 +12,7 @@ interface MyOrdersClientProps {
 
 type FilterStatus = 'All' | 'Active' | 'Completed';
 
-export default function MyOrdersClient({ orders }: MyOrdersClientProps) {
+export default function MyOrdersClient({ orders = [] }: MyOrdersClientProps) {
   const [activeTab, setActiveTab] = useState<FilterStatus>('All');
 
   // Map backend raw states onto user-friendly structural filter pipelines
@@ -35,6 +36,7 @@ export default function MyOrdersClient({ orders }: MyOrdersClientProps) {
       case 'Delivered':
         return { label: 'Delivered Fresh', color: 'bg-emerald-100 text-emerald-800 border-emerald-200', icon: CheckCircle2 };
       case 'Cancelled':
+      default:
         return { label: 'Cancelled', color: 'bg-rose-100 text-rose-800 border-rose-200', icon: XCircle };
     }
   };
@@ -97,8 +99,8 @@ export default function MyOrdersClient({ orders }: MyOrdersClientProps) {
                   <div className="flex items-center gap-4 md:col-span-2">
                     <div className="relative size-16 rounded-xl overflow-hidden bg-[#FBF6EC] shrink-0 border border-[#F3E8D3]">
                       <img
-                        src={order.product.image || "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=200"}
-                        alt={order.product.name}
+                        src={order.product?.image || "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=200"}
+                        alt={order.product?.name || "Product Image"}
                         className="w-full h-full object-cover"
                       />
                     </div>
@@ -107,11 +109,16 @@ export default function MyOrdersClient({ orders }: MyOrdersClientProps) {
                         {order._id}
                       </span>
                       <h3 className="text-sm font-black text-[#2B1B14] tracking-tight truncate">
-                        {order.product.name}
+                        {order.product?.name || "Bakery Delicacy"}
                       </h3>
                       <div className="flex items-center gap-1.5 text-xs font-bold text-[#8A7A6C]">
                         <Calendar size={13} className="text-[#8A7A6C]" />
-                        <span>{new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                        <span>
+                          {order.createdAt 
+                            ? new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                            : "N/A"
+                          }
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -120,15 +127,19 @@ export default function MyOrdersClient({ orders }: MyOrdersClientProps) {
                   <div className="flex items-center justify-between md:justify-around border-t border-b md:border-none border-[#F3E8D3] py-2 md:py-0">
                     <div className="flex flex-col">
                       <span className="text-[9px] uppercase font-black tracking-widest text-[#8A7A6C]">Price Basis</span>
-                      <span className="text-xs font-bold text-[#2B1B14]">${order.product.price.toFixed(2)}</span>
+                      <span className="text-xs font-bold text-[#2B1B14]">
+                        ${(order.product?.price ?? 0).toFixed(2)}
+                      </span>
                     </div>
                     <div className="flex flex-col items-center">
                       <span className="text-[9px] uppercase font-black tracking-widest text-[#8A7A6C]">Quantity</span>
-                      <span className="text-xs font-black text-[#2B1B14]">× {order.product.quantity}</span>
+                      <span className="text-xs font-black text-[#2B1B14]">× {order.product?.quantity ?? 1}</span>
                     </div>
                     <div className="flex flex-col items-end md:items-start">
                       <span className="text-[9px] uppercase font-black tracking-widest text-[#8A7A6C]">Net Value</span>
-                      <span className="text-sm font-black text-[#7A2048]">${order.product.total.toFixed(2)}</span>
+                      <span className="text-sm font-black text-[#7A2048]">
+                        ${(order.product?.total ?? 0).toFixed(2)}
+                      </span>
                     </div>
                   </div>
 

@@ -4,7 +4,8 @@ import React, { useState, useMemo } from 'react';
 import { Search, SlidersHorizontal, Cookie, Sparkles } from 'lucide-react';
 
 import ProductCard from './ProductCard';
-import { BakeryProduct } from '@/app/dashboard/user/foods/page';
+import { BakeryProduct } from '@/app/dashboard/user/foods/BakryProduct';
+
 
 interface FoodCatalogClientProps {
   initialProducts: BakeryProduct[];

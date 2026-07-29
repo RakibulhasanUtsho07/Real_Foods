@@ -4,7 +4,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, ShieldAlert, ArrowRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
-import { BakeryProduct } from '@/src/app/dashboard/user/foods/page';
+import { BakeryProduct } from '@/app/dashboard/user/foods/BakryProduct';
+
 
 interface ProductCardProps {
   product: BakeryProduct;

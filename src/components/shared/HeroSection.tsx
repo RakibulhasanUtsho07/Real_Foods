@@ -1,23 +1,22 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from "@heroui/react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { ChevronRight, Flame, ArrowDownCircle, Clock, ShoppingCart } from "lucide-react";
+import { Flame, ArrowDownCircle, Clock, ShoppingCart } from "lucide-react";
 
-// Updated configuration matching palette and adding utility data from image_1.png
 const BAKERY_SLIDES = [
   {
     id: "breads",
     category: "Breads",
-    headline: "Bitecrafted, not mass-baked.", // Exact phrase from image_1.png
+    headline: "Bitecrafted, not mass-baked.",
     description: "Slow-fermented sourdough, laminated artisanal loaves, baked in small batches every morning.",
     liveStat: "240 loaves baked today",
     price: "€6.50",
     prepTime: "24 hrs",
     image: "https://i.ibb.co.com/bt0g7bQ/real-foods-herosection-1.png",
-    gradient: "from-[#111111]/90 to-[#191919]/60", // Match background from image_1.png
-    accent: "text-amber-500", // Soft orange from liveStat in image_1.png
+    gradient: "from-[#111111]/90 to-[#191919]/60",
+    accent: "text-amber-500",
   },
   {
     id: "pastries",
@@ -49,7 +48,7 @@ export default function HeroSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const current = BAKERY_SLIDES[activeIndex];
 
-  // Function to generate split-text character animation
+  // TypeScript compatible variants definition
   const splitTextVariant = {
     hidden: { opacity: 0, y: 15, rotateX: -30 },
     visible: (i: number) => ({
@@ -61,33 +60,29 @@ export default function HeroSection() {
     exit: { opacity: 0, y: -10, transition: { duration: 0.15 } },
   };
 
-  // Scroll progress for subtle parallax on image zoom
   const { scrollYProgress } = useScroll();
   const imageScale = useTransform(scrollYProgress, [0, 1], [1, 1.25]);
 
   return (
     <section
-      className="relative p-10  w-full h-[65vh] min-h-[550px] flex items-center justify-center bg-[#ffffff] px-4 md:px-8 pt-20 select-none overflow-hidden"
+      className="relative p-10 w-full h-[65vh] min-h-[550px] flex items-center justify-center bg-[#ffffff] px-4 md:px-8 pt-20 select-none overflow-hidden"
       id="hero"
     >
-      {/* The main inner card, color-matched to the dark scheme of image_1.png */}
-      <div className="w-full max-w-7xl bg-[#9c8e8e]  rounded-[2.5rem] p-8 md:p-12 flex flex-col md:flex-row items-center gap-10 justify-between relative shadow-[0_15px_60px_-20px_rgba(0,0,0,0.6)] border border-white/5 h-full max-h-[520px] overflow-hidden">
-        
-        {/* LEFT COLUMN: Controls & Morphing Text */}
-        <div className="flex-1  flex flex-col h-full z-10 max-w-xl text-[#1f1e1e] justify-between">
-          
-          {/* Dynamic Category Tabs with unique animation */}
-          <div className="flex  gap-2.5 mb-6 flex-wrap">
+      <div className="w-full max-w-7xl bg-[#9c8e8e] rounded-[2.5rem] p-8 md:p-12 flex flex-col md:flex-row items-center gap-10 justify-between relative shadow-[0_15px_60px_-20px_rgba(0,0,0,0.6)] border border-white/5 h-full max-h-[520px] overflow-hidden">
+
+        {/* LEFT COLUMN */}
+        <div className="flex-1 flex flex-col h-full z-10 max-w-xl text-[#1f1e1e] justify-between">
+
+          <div className="flex gap-2.5 mb-6 flex-wrap">
             {BAKERY_SLIDES.map((slide, idx) => (
               <motion.button
                 key={slide.id}
                 onClick={() => setActiveIndex(idx)}
                 whileTap={{ scale: 0.95 }}
-                className={`px-6 py-2 rounded-full text-xs font-bold transition-all duration-300 relative ${
-                  activeIndex === idx
+                className={`px-6 py-2 rounded-full text-xs font-bold transition-all duration-300 relative ${activeIndex === idx
                     ? "text-white"
                     : "text-[#B0ACA2] hover:text-[#F0EDE6] hover:bg-[#2A2A2A]"
-                }`}
+                  }`}
               >
                 {activeIndex === idx && (
                   <motion.span
@@ -101,13 +96,17 @@ export default function HeroSection() {
             ))}
           </div>
 
-          {/* PREMIUM: Text Splitting Character Animation */}
           <div className="flex-1 flex flex-col justify-center gap-4">
             <AnimatePresence mode="wait">
               <motion.div key={current.id} initial="hidden" animate="visible" exit="exit" className="perspective-800">
                 <h1 className="text-4xl md:text-5xl font-extrabold text-[#F0EDE6] tracking-tight leading-[1.1] mb-5 flex flex-wrap gap-x-1.5 gap-y-0.5">
                   {current.headline.split("").map((char, i) => (
-                    <motion.span key={i} custom={i} variants={splitTextVariant} className="inline-block origin-bottom-left">
+                    <motion.span
+                      key={i}
+                      custom={i}
+                      variants={splitTextVariant as any}
+                      className="inline-block origin-bottom-left"
+                    >
                       {char === " " ? "\u00A0" : char}
                     </motion.span>
                   ))}
@@ -124,18 +123,16 @@ export default function HeroSection() {
             </AnimatePresence>
           </div>
 
-          {/* Enhanced Interactive Actions & Metadata */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-5 mt-6 border-t border-white/5 pt-6">
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                className="bg-[#33272c] text-white font-bold h-12 px-7 rounded-full shadow-lg shadow-[#B01750]/20 group border border-white/5"
-                endContent={<ShoppingCart size={18} className="group-hover:translate-x-0.5 transition-transform" />}
-              >
-                Taste This Week's Bake
-              </Button>
-            </motion.div>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="bg-[#33272c] text-white font-bold h-12 px-7 rounded-full shadow-lg shadow-[#B01750]/20 group border border-white/5 flex items-center justify-center gap-2 text-sm"
+            >
+              <span>Taste This Week's Bake</span>
+              <ShoppingCart size={18} className="group-hover:translate-x-0.5 transition-transform" />
+            </motion.button>
 
-            {/* Live Stat Counter with color match from image_1.png */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={current.id}
@@ -151,10 +148,8 @@ export default function HeroSection() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Enhanced Media Viewport with Zoom Parallax */}
+        {/* RIGHT COLUMN */}
         <div className="flex-1 w-full h-full relative min-h-[260px] md:min-h-0 rounded-3xl overflow-hidden shadow-inner bg-gradient-to-br from-neutral-900 to-[#191919] border border-white/5 flex items-center justify-center p-3 perspective-1200">
-          
-          {/* Ambient Flour Particles: Increased density & movement */}
           <div className="absolute inset-0 pointer-events-none z-10 opacity-60">
             {[...Array(9)].map((_, i) => (
               <motion.div
@@ -178,7 +173,6 @@ export default function HeroSection() {
             ))}
           </div>
 
-          {/* Sliding Image Container with Zoom Parallax hook */}
           <AnimatePresence mode="wait">
             <motion.div
               key={current.id}
@@ -188,23 +182,21 @@ export default function HeroSection() {
               transition={{ duration: 0.5, ease: "easeInOut" }}
               className="absolute inset-0 w-full h-full flex items-center justify-center p-3 rounded-3xl overflow-hidden"
             >
-              {/* Dynamic Overlay Gradient to enhance product contrast and depth */}
               <div className={`absolute inset-0 bg-gradient-to-t ${current.gradient} mix-blend-multiply z-10 pointer-events-none transition-all duration-300`} />
-              
+
               <motion.img
                 src={current.image}
                 alt={current.category}
-                style={{ scale: imageScale }} // Subtle zoom on scroll
+                style={{ scale: imageScale }}
                 className="w-full h-full object-cover rounded-2xl select-none"
               />
 
-              {/* Product Utility Data Overlay */}
               <div className="absolute bottom-5 left-5 z-20 flex gap-2">
-                <motion.div whileHover={{y: -3}} className="bg-[#262626]/80 backdrop-blur-sm border border-white/5 px-4 py-2 rounded-xl text-xs font-bold text-[#F0EDE6] flex items-center gap-1.5 shadow-xl">
+                <motion.div whileHover={{ y: -3 }} className="bg-[#262626]/80 backdrop-blur-sm border border-white/5 px-4 py-2 rounded-xl text-xs font-bold text-[#F0EDE6] flex items-center gap-1.5 shadow-xl">
                   {current.price}
                 </motion.div>
-                <motion.div whileHover={{y: -3}} className="bg-[#262626]/80 backdrop-blur-sm border border-white/5 px-4 py-2 rounded-xl text-xs font-medium text-[#B0ACA2] flex items-center gap-1.5 shadow-xl">
-                  <Clock size={14} className="text-amber-500"/>
+                <motion.div whileHover={{ y: -3 }} className="bg-[#262626]/80 backdrop-blur-sm border border-white/5 px-4 py-2 rounded-xl text-xs font-medium text-[#B0ACA2] flex items-center gap-1.5 shadow-xl">
+                  <Clock size={14} className="text-amber-500" />
                   <span>Prep: {current.prepTime}</span>
                 </motion.div>
               </div>
@@ -212,7 +204,7 @@ export default function HeroSection() {
           </AnimatePresence>
         </div>
 
-        {/* --- JAGGED TORN-CRUST EDGE DIVIDER --- (Color Matched) */}
+        {/* DIVIDER */}
         <div className="absolute bottom-0 inset-x-0 w-full overflow-hidden leading-[0] h-6 pointer-events-none z-30">
           <svg
             className="relative block w-full h-full transform rotate-180 text-white fill-current opacity-[0.03]"
@@ -226,11 +218,11 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* NEW: Custom Animated Scroll indicator Anchor */}
+      {/* Scroll Indicator */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-1.5 text-white z-40 hidden md:flex">
         <span className="text-[10px] font-bold tracking-widest uppercase opacity-70">Scroll Menu</span>
         <motion.a href="#menu-explorer" animate={{ y: [0, 6, 0] }} transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }} className="hover:text-amber-500 transition-colors">
-          <ArrowDownCircle size={20} className="stroke-[1.5]"/>
+          <ArrowDownCircle size={20} className="stroke-[1.5]" />
         </motion.a>
       </div>
     </section>

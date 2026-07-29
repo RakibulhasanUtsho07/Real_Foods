@@ -8,21 +8,18 @@ import {
   UtensilsCrossed, 
   ShoppingBag, 
   User, 
-  Menu, 
-  Settings
+  Menu
 } from "lucide-react";
 import { Drawer, Button } from "@heroui/react";
 import Link from "next/link";
-import { authClient } from "@/lib/auth-client";
- // আপনার auth-client ফাইলের সঠিক পাথ দিন
 
-// ✅ ফিক্স: user prop-এর জন্য explicit টাইপ ডিফাইন করা হলো (আগে কোনো টাইপ ছিল না, তাই implicit any error দিচ্ছিল)
+// ✅ ফিক্স: role ফিল্ডে null এলাউ করা হলো যেন session response এর সাথে Type match করে
 interface DashboardUser {
   id?: string;
   name?: string;
   email?: string;
-  role?: string;
-  [key: string]: any; // অন্যান্য session ফিল্ড (createdAt, image ইত্যাদি) accept করার জন্য
+  role?: string | null;
+  [key: string]: any;
 }
 
 interface DashboardSidebarProps {
@@ -30,9 +27,6 @@ interface DashboardSidebarProps {
 }
 
 export default function DashboardSidebar({ user }: DashboardSidebarProps) {
-  // const { data: session } = authClient.useSession();
-  // const user = session?.user;
-  // console.log(user, "hello user master")
 
   // 🥐 সাধারণ ইউজার/কাস্টমার ড্যাশবোর্ড লিংকসমূহ
   const userNavLink = [
@@ -49,10 +43,7 @@ export default function DashboardSidebar({ user }: DashboardSidebarProps) {
     { icon: UtensilsCrossed, label: "Manage Foods", link: "admin/foods" },
     { icon: User, label: "Admin Profile", link: "admin/profile" },
   ];
-  // const newUser = {
-  //   ...user,
-  //   role:"user",
-  // }
+
   // রোলের ওপর ভিত্তি করে ডাইনামিক রেন্ডারিং
   const navItems = user?.role === "admin" ? adminNavItems : userNavLink;
 
@@ -73,7 +64,7 @@ export default function DashboardSidebar({ user }: DashboardSidebarProps) {
     </Link>
   );
 
-  // ডেক্সটপ ও মোবাইল উভয়ের জন্য কমন লিংক রেন্ডারার (Real Foods ব্র্যান্ড কালার ম্যাচড)
+  // ডেক্সটপ ও মোবাইল উভয়ের জন্য কমন লিংক রেন্ডারার
   const renderNavLinks = (isMobile = false) => (
     <nav className="flex flex-col gap-2 w-full">
       {navItems.map((item) => {
@@ -90,7 +81,6 @@ export default function DashboardSidebar({ user }: DashboardSidebarProps) {
               <span className="tracking-wide font-bold">{item.label}</span>
             </div>
             
-            {/* বেকারি ব্র্যান্ড ম্যাচড টোস্টেড নিওন ডট */}
             <div className="size-1.5 rounded-full bg-[#B4622F] opacity-0 group-hover:opacity-100 transition-all shadow-[0_0_8px_rgba(180,98,47,0.8)] transform translate-x-2 group-hover:translate-x-0 duration-300" />
           </Link>
         );
@@ -100,18 +90,16 @@ export default function DashboardSidebar({ user }: DashboardSidebarProps) {
 
   return (
     <>
-      {/* 🖥️ ডেক্সটপ সাইডবার (বেকারি থিমড লাক্সারি ব্রাউন কালার স্কিম) */}
+      {/* 🖥️ ডেক্সটপ সাইডবার */}
       <aside className="hidden lg:flex flex-col w-64 h-screen bg-[#FBF6EC] dark:bg-[#2B1B14] border-r border-[#E8D9BC] dark:border-[#4A2E1F] shrink-0 z-20">
-       
         <div className="py-6 px-4 flex-1 overflow-y-auto">
           {renderNavLinks(false)}
         </div>
       </aside>
 
-      {/* 📱 মোবাইল ও ট্যাবলেট ড্রয়ার (ব্র্যান্ডেড ট্র্রিগার বাটন সহ) */}
+      {/* 📱 মোবাইল ও ট্যাবলেট ড্রয়ার */}
       <div className="lg:hidden fixed top-3 left-4 z-50">
         <Drawer>
-          {/* মোবাইল মেনু বাটন */}
           <Button 
             className="bg-[#FBF6EC]/90 dark:bg-[#2B1B14]/90 border border-[#E8D9BC] dark:border-[#4A2E1F] text-[#4A2E1F] dark:text-[#F3E8D3] hover:text-[#7A2048] transition-all font-bold rounded-xl shadow-md backdrop-blur-sm px-4 h-10 flex items-center gap-2"
           >
