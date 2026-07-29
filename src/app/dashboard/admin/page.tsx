@@ -1,3 +1,4 @@
+import AdminHomePage from '@/components/dashboard/AdminDashboardHomePage';
 import DashboardSidebar from '@/components/dashboard/DashboardSideber';
 import UserHomePage from '@/components/dashboard/UserDashboardHomePage';
 import { getSessionServerData } from '@/lib/core/session/session-server';
@@ -18,7 +19,7 @@ export default async function AdminPage() {
      
       <main className="flex-1 w-full min-w-0 overflow-y-auto">
         <div className="p-4 sm:p-6 lg:p-8 pt-16 lg:pt-6 w-full">
-          <UserHomePage />
+          <AdminHomePage/>
         </div>
       </main>
 
