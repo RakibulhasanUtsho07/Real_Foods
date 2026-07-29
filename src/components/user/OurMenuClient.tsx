@@ -4,8 +4,9 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingCart, Star, Search, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { getSessionData } from '@/lib/core/session/session-client';
-import type { BakeryItem } from '@/app/our-menu/page';
+
+import { getSessionServerData } from '@/lib/core/session/session-client';
+import { BakeryItem } from '@/app/dashboard/user/menu/page';
 
 interface OurMenuClientProps {
   items: BakeryItem[];
@@ -23,7 +24,7 @@ export default function OurMenuClient({ items }: OurMenuClientProps) {
   useEffect(() => {
     const verifyUser = async () => {
       try {
-        const user = await getSessionData();
+        const user = await getSessionServerData();
         console.log("Menu client session check:", user);
 
         if (!user) {

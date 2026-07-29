@@ -3,8 +3,9 @@ import { notFound } from 'next/navigation';
 
 // আপনার প্রোডাকশন টাইপ বাইন্ডিং
 import ProductDetailsClient from '@/components/dashboard/ProductDetailsSection';
-import { getSessionData } from '@/lib/core/session/session-client';
+
 import { getProductById } from '@/lib/api/action/action';
+import { getSessionServerData } from '@/lib/core/session/session-client';
 
 // Next.js 15+ এর জন্য সঠিক অ্যাসিনক্রোনাস params টাইপ ডিক্লারেশন
 interface PageProps {
@@ -18,7 +19,7 @@ export default async function ProductDetailsPage({ params }: PageProps) {
   // ২. প্যারালাল ফেচিং মেকানিজম (Express API & Better-Auth Session)
   const [product, user] = await Promise.all([
     getProductById(id),
-    getSessionData(),
+    getSessionServerData(),
   ]);
 
   // ৩. প্রোডাক্ট না পাওয়া গেলে সাথে সাথে Next.js default 404 পেজে রিডাইরেক্ট করবে

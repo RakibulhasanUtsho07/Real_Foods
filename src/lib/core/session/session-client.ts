@@ -1,13 +1,13 @@
+import "server-only";
+import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { authClient } from "../../auth-client"; // অথবা আপনার auth (server instance)
+
+ // ⚠️ path আপনার প্রজেক্ট অনুযায়ী চেক করুন — এটা "server" auth instance, authClient না
 
 export const getSessionServerData = async () => {
   try {
-    const reqHeaders = await headers();
-    const { data: session } = await authClient.getSession({
-      fetchOptions: {
-        headers: reqHeaders,
-      },
+    const session = await auth.api.getSession({
+      headers: await headers(),
     });
 
     return session?.user ?? null;
@@ -16,3 +16,4 @@ export const getSessionServerData = async () => {
     return null;
   }
 };
+

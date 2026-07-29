@@ -1,5 +1,6 @@
 import MyOrdersClient from '@/components/dashboard/MyOrderClient';
-import { getSessionData } from '@/lib/core/session/session-client';
+import { getSessionServerData } from '@/lib/core/session/session-client';
+
 import { redirect } from 'next/navigation';
 import React from 'react';
 
@@ -25,7 +26,7 @@ export interface OrderedProduct {
 }
 
 export default async function MyOrdersPage() {
-  const user = await getSessionData()
+  const user = await getSessionServerData()
     if (!user) {
       redirect("/login"); // ⚠️ point this to your real login route
     }

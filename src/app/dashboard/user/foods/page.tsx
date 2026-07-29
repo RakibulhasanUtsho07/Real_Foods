@@ -1,8 +1,10 @@
 import FoodCatalogClient from "@/components/dashboard/UsersAllFoodsPage";
 import { allFoods } from "@/lib/api/data/data";
-import { getSessionData } from '@/lib/core/session/session-client';
+
 import { redirect } from "next/navigation";
 import { Sparkles, Package, Layers } from "lucide-react";
+import { getSessionServerData } from "@/lib/core/session/session-client";
+
 
 // Interface matching your MongoDB document schema
 export interface BakeryProduct {
@@ -21,7 +23,7 @@ export interface BakeryProduct {
 export default async function UserAllFoodsPage() {
   const [products, user] = await Promise.all([
     allFoods(),
-    getSessionData(),
+    getSessionServerData(),
   ]);
 
   // Guard: only logged-in users with role "user" can access the catalog
