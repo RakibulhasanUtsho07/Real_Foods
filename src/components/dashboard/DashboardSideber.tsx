@@ -16,10 +16,23 @@ import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
  // আপনার auth-client ফাইলের সঠিক পাথ দিন
 
-export default function DashboardSidebar() {
-  const { data: session } = authClient.useSession();
-  const user = session?.user;
-  console.log(user, "hello user master")
+// ✅ ফিক্স: user prop-এর জন্য explicit টাইপ ডিফাইন করা হলো (আগে কোনো টাইপ ছিল না, তাই implicit any error দিচ্ছিল)
+interface DashboardUser {
+  id?: string;
+  name?: string;
+  email?: string;
+  role?: string;
+  [key: string]: any; // অন্যান্য session ফিল্ড (createdAt, image ইত্যাদি) accept করার জন্য
+}
+
+interface DashboardSidebarProps {
+  user: DashboardUser | null;
+}
+
+export default function DashboardSidebar({ user }: DashboardSidebarProps) {
+  // const { data: session } = authClient.useSession();
+  // const user = session?.user;
+  // console.log(user, "hello user master")
 
   // 🥐 সাধারণ ইউজার/কাস্টমার ড্যাশবোর্ড লিংকসমূহ
   const userNavLink = [
@@ -60,7 +73,7 @@ export default function DashboardSidebar() {
     </Link>
   );
 
-  // ডেক্সটপ ও মোবাইল উভয়ের জন্য কমন লিংক রেন্ডারার (Real Foods ব্র্যান্ড কালার ম্যাচড)
+  // ডেক্সটপ ও মোবাইল উভয়ের জন্য কমন লিংক রেন্ডারার (Real Foods ব্র্যান্ড কালার ম্যাচড)
   const renderNavLinks = (isMobile = false) => (
     <nav className="flex flex-col gap-2 w-full">
       {navItems.map((item) => {
@@ -100,9 +113,9 @@ export default function DashboardSidebar() {
         <Drawer>
           {/* মোবাইল মেনু বাটন */}
           <Button 
-            className="bg-[#FBF6EC]/90 dark:bg-[#2B1B14]/90 border border-[#E8D9BC] dark:border-[#4A2E1F] text-[#4A2E1F] dark:text-[#F3E8D3] hover:text-[#7A2048] transition-all font-bold rounded-xl shadow-md backdrop-blur-sm px-4 h-10"
-            startContent={<Menu className="size-4 text-[#B4622F]" />}
+            className="bg-[#FBF6EC]/90 dark:bg-[#2B1B14]/90 border border-[#E8D9BC] dark:border-[#4A2E1F] text-[#4A2E1F] dark:text-[#F3E8D3] hover:text-[#7A2048] transition-all font-bold rounded-xl shadow-md backdrop-blur-sm px-4 h-10 flex items-center gap-2"
           >
+            <Menu className="size-4 text-[#B4622F]" />
             Menu
           </Button>
 

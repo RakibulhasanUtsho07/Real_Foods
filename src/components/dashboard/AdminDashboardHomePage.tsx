@@ -47,7 +47,7 @@ function AnimatedStat({ target, prefix = '', suffix = '', decimals = 0 }: { targ
   useEffect(() => {
     const controls = animate(0, target, {
       duration: 1.1,
-      ease: [0.16, 1, 0.3, 1],
+      ease: [0.16, 1, 0.3, 1] as const, // ✅ fix: as const so TS infers a fixed tuple, not number[]
       onUpdate: (v) => setDisplay(v),
     });
     return () => controls.stop();
@@ -139,7 +139,7 @@ export default function AdminHomePage() {
   };
   const itemVariants = {
     hidden: { opacity: 0, y: 16 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] as const } }, // ✅ fix
   };
 
   return (
@@ -306,7 +306,7 @@ export default function AdminHomePage() {
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${bar.value}%` }}
-                    transition={{ duration: 1, delay: 0.3 + i * 0.15, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ duration: 1, delay: 0.3 + i * 0.15, ease: [0.16, 1, 0.3, 1] as const }} // ✅ fix
                     className="h-full rounded-full"
                     style={{ backgroundColor: bar.color }}
                   />

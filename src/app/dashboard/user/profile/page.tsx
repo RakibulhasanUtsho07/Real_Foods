@@ -1,11 +1,12 @@
 import UserInfoCard from "@/components/user/ProfileCard";
 import UserActivityLog from "@/components/user/UserActivityLog";
-import { getSessionData } from '@/lib/core/session/session-client';
+import { getSessionServerData } from "@/lib/core/session/session-server";
+
 import { redirect } from "next/navigation";
 
 
 export default async function UserProfilePage() {
-    const user = await getSessionData()
+    const user = await getSessionServerData()
       if (!user) {
         redirect("/login"); // ⚠️ point this to your real login route
       }

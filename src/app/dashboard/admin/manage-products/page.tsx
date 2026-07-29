@@ -1,6 +1,7 @@
 import EditProductModal from "@/components/admin/EditProductForm"; // ⚠️ adjust to your component location
 import { specificProduct } from "@/lib/api/action/action";
-import { getSessionData } from "@/lib/core/session/session-client";
+import { getSessionServerData } from "@/lib/core/session/session-server";
+
 import { redirect } from "next/navigation";
 
 interface Props {
@@ -8,7 +9,7 @@ interface Props {
 }
 
 async function ManageProductPage({ params }: Props) {
-  const user = await getSessionData();
+  const user = await getSessionServerData();
 
   if (!user) {
     redirect("/login");

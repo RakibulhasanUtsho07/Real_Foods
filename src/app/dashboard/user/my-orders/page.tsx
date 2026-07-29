@@ -1,5 +1,6 @@
 import MyOrdersClient from '@/components/dashboard/MyOrderClient';
-import { getSessionServerData } from '@/lib/core/session/session-client';
+import { getSessionServerData } from '@/lib/core/session/session-server';
+
 
 import { redirect } from 'next/navigation';
 import React from 'react';

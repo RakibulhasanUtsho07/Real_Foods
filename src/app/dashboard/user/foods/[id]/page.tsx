@@ -5,7 +5,8 @@ import { notFound } from 'next/navigation';
 import ProductDetailsClient from '@/components/dashboard/ProductDetailsSection';
 
 import { getProductById } from '@/lib/api/action/action';
-import { getSessionServerData } from '@/lib/core/session/session-client';
+import { getSessionServerData } from '@/lib/core/session/session-server';
+
 
 // Next.js 15+ এর জন্য সঠিক অ্যাসিনক্রোনাস params টাইপ ডিক্লারেশন
 interface PageProps {

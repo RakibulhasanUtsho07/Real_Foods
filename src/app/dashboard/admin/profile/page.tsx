@@ -1,12 +1,13 @@
 import AdminStatGrid from '@/components/admin/AdminStatCard';
 import SystemControlCard from '@/components/admin/SystemControlCard';
-import { getSessionData } from '@/lib/core/session/session-client';
+import { getSessionServerData } from '@/lib/core/session/session-server';
+
 import { redirect } from 'next/navigation';
 import React from 'react';
 
 
 export default async function AdminProfilePage() {
-    const user = await getSessionData()
+    const user = await getSessionServerData()
       if (!user) {
         redirect("/login"); // ⚠️ point this to your real login route
       }

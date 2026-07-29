@@ -1,14 +1,19 @@
 
 import DashboardSidebar from '@/components/dashboard/DashboardSideber';
 import UserHomePage from '@/components/dashboard/UserDashboardHomePage';
+import { getSessionServerData } from '@/lib/core/session/session-server';
+
 import React from 'react';
 
-export default function AdminPage() {
+export default async function AdminPage() {
+   const user = await getSessionServerData()
+   console.log(user, "user user client")
+  
   return (
     <div className="min-h-screen w-full flex bg-[#FBF6EC]/40 dark:bg-[#5e4a42] text-[#745143] dark:text-[#F3E8D3]">
       
       
-      <DashboardSidebar />
+      <DashboardSidebar user={user} />
       
      
       <main className="flex-1 w-full min-w-0 overflow-y-auto">

@@ -3,7 +3,8 @@ import { allFoods } from "@/lib/api/data/data";
 
 import { redirect } from "next/navigation";
 import { Sparkles, Package, Layers } from "lucide-react";
-import { getSessionServerData } from "@/lib/core/session/session-client";
+import { getSessionServerData } from "@/lib/core/session/session-server";
+
 
 
 // Interface matching your MongoDB document schema

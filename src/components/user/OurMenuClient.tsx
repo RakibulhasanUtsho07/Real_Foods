@@ -5,8 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingCart, Star, Search, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-import { getSessionServerData } from '@/lib/core/session/session-client';
+
 import { BakeryItem } from '@/app/dashboard/user/menu/page';
+import { getSessionServerData } from '@/lib/core/session/session-server';
 
 interface OurMenuClientProps {
   items: BakeryItem[];

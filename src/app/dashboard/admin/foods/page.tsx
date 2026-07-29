@@ -2,12 +2,14 @@
 
 import FoodsTable from "@/components/admin/FoodsTable";
 import { allFoods } from "@/lib/api/data/data";
-import { getSessionData } from "@/lib/core/session/session-client";
+import { getSessionServerData } from "@/lib/core/session/session-server";
+
+
 
 import { redirect } from "next/navigation";
 
 async function AllFoodsPage() {
-  const user = await getSessionData()
+  const user = await getSessionServerData()
     if (!user) {
       redirect("/login"); // ⚠️ point this to your real login route
     }
