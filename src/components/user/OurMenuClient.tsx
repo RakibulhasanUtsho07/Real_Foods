@@ -4,19 +4,16 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingCart, Star, Search, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-
-
 import { BakeryItem } from '@/app/dashboard/user/menu/page';
-import { getSessionData } from '@/lib/core/session/session-client';
-
 
 interface OurMenuClientProps {
   items: BakeryItem[];
+  initialUser: any;
 }
 
 type MenuCategory = 'All' | 'Oven Fresh' | 'Signature Sweet' | 'Artisan Bread' | 'Celebration Cakes';
 
-export default function OurMenuClient({ items }: OurMenuClientProps) {
+export default function OurMenuClient({ items, initialUser }: OurMenuClientProps) {
   const router = useRouter();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<MenuCategory>('All');
@@ -24,30 +21,18 @@ export default function OurMenuClient({ items }: OurMenuClientProps) {
 
   // 🔐 CLIENT-SIDE AUTH CHECK
   useEffect(() => {
-    const verifyUser = async () => {
-      try {
-        const user = await getSessionData();
-        console.log("Menu client session check:", user);
+    if (!initialUser) {
+      router.replace("/login");
+      return;
+    }
 
-        if (!user) {
-          router.replace("/login");
-          return;
-        }
+    if (initialUser?.role !== "user") {
+      router.replace("/");
+      return;
+    }
 
-        if ((user as any)?.role !== "user") {
-          router.replace("/");
-          return;
-        }
-
-        setIsCheckingAuth(false);
-      } catch (error) {
-        console.error("Auth check error:", error);
-        router.replace("/login");
-      }
-    };
-
-    verifyUser();
-  }, [router]);
+    setIsCheckingAuth(false);
+  }, [initialUser, router]);
 
   const categories: MenuCategory[] = ['All', 'Oven Fresh', 'Signature Sweet', 'Artisan Bread', 'Celebration Cakes'];
 

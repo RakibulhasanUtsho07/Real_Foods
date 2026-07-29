@@ -1,4 +1,5 @@
 import OurMenuClient from '@/components/user/OurMenuClient';
+import { getSessionServerData } from '@/lib/core/session/session-server';
 import React from 'react';
 
 export interface BakeryItem {
@@ -12,6 +13,8 @@ export interface BakeryItem {
 }
 
 export default async function OurMenuPage() {
+  const user = await getSessionServerData();
+
   const mockMenuData: BakeryItem[] = [
     {
       _id: "prod-01",
@@ -76,7 +79,7 @@ export default async function OurMenuPage() {
       </div>
 
       {/* INTERACTIVE CLIENT CONTAINER */}
-      <OurMenuClient items={mockMenuData} />
+      <OurMenuClient initialUser={user} items={mockMenuData} />
     </div>
   );
 }
