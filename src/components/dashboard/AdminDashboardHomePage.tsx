@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { motion, animate } from 'framer-motion';
+import { motion, animate, Variants } from 'framer-motion';
 import {
   ShoppingBag,
   UtensilsCrossed,
@@ -25,7 +25,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-// ---------- Brand tokens (kept from your existing design) ----------
+// ---------- Brand tokens ----------
 const BRAND = {
   ink: '#2B1B14',
   ink2: '#4A2E1F',
@@ -40,14 +40,14 @@ const BRAND = {
   mutedSoft: '#7A6A5C',
 };
 
-// ---------- Animated counter (counts up on mount using framer-motion) ----------
+// ---------- Animated counter ----------
 function AnimatedStat({ target, prefix = '', suffix = '', decimals = 0 }: { target: number; prefix?: string; suffix?: string; decimals?: number }) {
   const [display, setDisplay] = useState(0);
 
   useEffect(() => {
     const controls = animate(0, target, {
       duration: 1.1,
-      ease: [0.16, 1, 0.3, 1] as const, // ✅ fix: as const so TS infers a fixed tuple, not number[]
+      ease: [0.16, 1, 0.3, 1],
       onUpdate: (v) => setDisplay(v),
     });
     return () => controls.stop();
@@ -60,7 +60,7 @@ function AnimatedStat({ target, prefix = '', suffix = '', decimals = 0 }: { targ
   return <>{prefix}{formatted}{suffix}</>;
 }
 
-// ---------- Custom chart tooltip, themed to match the dashboard ----------
+// ---------- Custom chart tooltip ----------
 function ChartTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
@@ -74,6 +74,26 @@ function ChartTooltip({ active, payload, label }: any) {
     </div>
   );
 }
+
+// ---------- Animation Variants (Explicitly Typed to fix TypeScript error) ----------
+const containerVariants: Variants = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.08 },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  },
+};
 
 export default function AdminHomePage() {
   const [now, setNow] = useState<Date | null>(null);
@@ -132,15 +152,6 @@ export default function AdminHomePage() {
     { name: 'Croissant Box', units: 61 },
     { name: 'Blueberry Muffin', units: 47 },
   ];
-
-  const containerVariants = {
-    hidden: {},
-    show: { transition: { staggerChildren: 0.08 } },
-  };
-  const itemVariants = {
-    hidden: { opacity: 0, y: 16 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] as const } }, // ✅ fix
-  };
 
   return (
     <div className="min-h-screen bg-[#FBF6EC]/40 p-4 sm:p-6 lg:p-8 space-y-8 mt-12 lg:mt-0">
@@ -306,7 +317,7 @@ export default function AdminHomePage() {
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${bar.value}%` }}
-                    transition={{ duration: 1, delay: 0.3 + i * 0.15, ease: [0.16, 1, 0.3, 1] as const }} // ✅ fix
+                    transition={{ duration: 1, delay: 0.3 + i * 0.15, ease: [0.16, 1, 0.3, 1] }}
                     className="h-full rounded-full"
                     style={{ backgroundColor: bar.color }}
                   />
@@ -327,7 +338,7 @@ export default function AdminHomePage() {
       {/* --- ORDERS + TOP ITEMS --- */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* RECENT ORDERS with functional status filter */}
+        {/* RECENT ORDERS */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -428,11 +439,7 @@ export default function AdminHomePage() {
                   tickLine={false}
                 />
                 <Tooltip content={<ChartTooltip />} cursor={{ fill: BRAND.bg }} />
-                <Bar dataKey="units" name="Units" radius={[0, 6, 6, 0]} animationDuration={900}>
-                  {topItems.map((_, i) => (
-                    <motion.rect key={i} />
-                  ))}
-                </Bar>
+                <Bar dataKey="units" name="Units" radius={[0, 6, 6, 0]} animationDuration={900} fill={BRAND.wine} />
               </BarChart>
             </ResponsiveContainer>
           </div>
