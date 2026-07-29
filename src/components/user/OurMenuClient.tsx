@@ -7,7 +7,8 @@ import { useRouter } from 'next/navigation';
 
 
 import { BakeryItem } from '@/app/dashboard/user/menu/page';
-import { getSessionServerData } from '@/lib/core/session/session-server';
+import { getSessionData } from '@/lib/core/session/session-client';
+
 
 interface OurMenuClientProps {
   items: BakeryItem[];
@@ -25,7 +26,7 @@ export default function OurMenuClient({ items }: OurMenuClientProps) {
   useEffect(() => {
     const verifyUser = async () => {
       try {
-        const user = await getSessionServerData();
+        const user = await getSessionData();
         console.log("Menu client session check:", user);
 
         if (!user) {
